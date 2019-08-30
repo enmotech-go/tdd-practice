@@ -1,6 +1,9 @@
 package class2
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestAdder(t *testing.T) {
 	got := Add(2, 2)
@@ -10,4 +13,9 @@ func TestAdder(t *testing.T) {
 	}
 
 }
-q
+
+func ExampleAdd() {
+	add := Add(1, 5)
+	fmt.Println(add)
+	// Output: 6
+}
