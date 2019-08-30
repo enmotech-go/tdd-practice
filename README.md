@@ -2,3 +2,12 @@
 [![codecov](https://codecov.io/gh/enmotech-go/tdd-practice/branch/kliyes/graph/badge.svg)](https://codecov.io/gh/enmotech-go/tdd-practice)
 # tdd-practice
 Where we do TDD practice
+
+david_think branch for daiwei
+
+##Lesson one
+  Hello world
+  
+##Lesson two
+  integers
+
