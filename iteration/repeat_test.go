@@ -16,6 +16,11 @@ func TestRepeat(t *testing.T) {
 			args{char: ""},
 			"",
 		},
+		{
+			"test repeat `hello`",
+			args{char: "hello"},
+			"hellohello",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
