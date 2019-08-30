@@ -1,5 +1,5 @@
 package class02
 
 func Add(a int, b int) int {
-	return 0
+	return a + b
 }
