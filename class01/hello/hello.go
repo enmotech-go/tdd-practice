@@ -1,9 +1,11 @@
 package hello
 
+const prefixEnglishHello = "Hello, "
+
 func Hello(name string) string {
 	if name == "" {
-		return "Hello, world"
+		return prefixEnglishHello + "world"
 	}
 
-	return "Hello, " + name
+	return prefixEnglishHello + name
 }
