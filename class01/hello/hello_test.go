@@ -4,6 +4,7 @@ import "testing"
 
 func TestHello(t *testing.T) {
 	assertCorrectMessage := func(t *testing.T, want, got string) {
+		t.Helper()
 		if got != want {
 			t.Errorf("want '%s' got '%s' ", want, got)
 		}
