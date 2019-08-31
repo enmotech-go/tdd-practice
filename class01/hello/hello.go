@@ -1,21 +1,28 @@
 package hello
 
-const prefixEnglishHello = "Hello, "
-const prefixSpanishHello = "Hola, "
-const prefixFrenchHello = "Bonjour, "
+const englishPrefix = "Hello, "
+const spanishPrefix = "Hola, "
+const frenchPrefix = "Bonjour, "
+const spanish = "Spanish"
+const french = "French"
 
+func generatePrefix(language string) (prefix string) {
+	switch language {
+	case french:
+		prefix = frenchPrefix
+	case spanish:
+		prefix = spanishPrefix
+	default:
+		prefix = englishPrefix
+	}
+	return
+}
 func Hello(name string, language string) string {
 	if name == "" {
-		return prefixEnglishHello + "world"
+		name = "world"
 	}
 
-	if language == "Spanish" {
-		return prefixSpanishHello + name
-	}
+	prefix := generatePrefix(language)
 
-	if language == "Bonjour" {
-		return prefixFrenchHello + name
-	}
-
-	return prefixEnglishHello + name
+	return prefix + name
 }
