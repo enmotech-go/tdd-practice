@@ -1,6 +1,6 @@
 package class4
 
-func Sum(num [5]int) int {
+func Sum(num []int) int {
 	var sum int
 	for _, v := range num {
 		sum += v
