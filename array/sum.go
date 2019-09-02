@@ -19,7 +19,9 @@ func SumAll(numbers ...[]int) []int {
 func SumAllTails(numbers ...[]int) []int {
 	var sum = make([]int, len(numbers))
 	for i, n := range numbers {
-		sum[i] = Sum(n[1:])
+		if len(n) > 0 {
+			sum[i] = Sum(n[1:])
+		}
 	}
 	return sum
 }

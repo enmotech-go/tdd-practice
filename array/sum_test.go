@@ -83,6 +83,13 @@ func TestSumAllTails(t *testing.T) {
 			},
 			[]int{5, 9},
 		},
+		{
+			"test sum empty slice tails",
+			args{
+				numbers: [][]int{{1, 2, 3}, {}},
+			},
+			[]int{5, 0},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
