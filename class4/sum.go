@@ -9,11 +9,8 @@ func Sum(num []int) int {
 }
 
 func SumAll(num ...[]int) (sums []int) {
-	lengthOfNumbers := len(num)
-	sums = make([]int, lengthOfNumbers)
-
-	for k, v := range num {
-		sums[k] = Sum(v)
+	for _, v := range num {
+		sums = append(sums, Sum(v))
 	}
 	return
 }
