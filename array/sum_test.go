@@ -1,8 +1,10 @@
 package array
 
-import "testing"
+import (
+	"testing"
+)
 
-func TestSum(t *testing.T) {
+func TestSumArray(t *testing.T) {
 	type args struct {
 		numbers [5]int
 	}
@@ -19,8 +21,32 @@ func TestSum(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Sum(tt.args.numbers); got != tt.want {
-				t.Errorf("Sum() = %v, want %v", got, tt.want)
+			if got := SumArray(tt.args.numbers); got != tt.want {
+				t.Errorf("SumArray() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestSumSlice(t *testing.T) {
+	type args struct {
+		numbers []int
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			"test sum empty slice",
+			args{numbers: []int{}},
+			0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SumSlice(tt.args.numbers); got != tt.want {
+				t.Errorf("SumSlice() = %v, want %v", got, tt.want)
 			}
 		})
 	}
