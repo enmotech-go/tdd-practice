@@ -11,6 +11,8 @@ func TestRepeat(t *testing.T) {
 	}
 }
 
+
+//go test -v -bench=. -benchmem
 func BenchmarkRepeat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		Repeat("a")
