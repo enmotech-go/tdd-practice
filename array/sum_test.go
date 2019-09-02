@@ -66,3 +66,29 @@ func TestSumAll(t *testing.T) {
 		})
 	}
 }
+
+func TestSumAllTails(t *testing.T) {
+	type args struct {
+		numbers [][]int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{
+			"test sum two slices tails",
+			args{
+				numbers: [][]int{{1, 2, 3}, {0, 9}},
+			},
+			[]int{5, 9},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SumAllTails(tt.args.numbers...); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("SumAllTails() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
