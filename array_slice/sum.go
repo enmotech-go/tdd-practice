@@ -1,5 +1,9 @@
 package array_slice
 
 func Sum(numbers [5]int)int{
-	return 0
+	sum := 0
+	for i := 0; i < 5; i++ {
+		sum += numbers[i]
+	}
+	return sum
 }
