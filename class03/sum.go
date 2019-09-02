@@ -1,9 +1,11 @@
 package class03
 
-func Sum(numbers [5]int) (sum int) {
+func Sum(numbers []int) int {
+	sum := 0
+
 	for _, number := range numbers {
 		sum += number
 	}
 
-	return
+	return sum
 }
