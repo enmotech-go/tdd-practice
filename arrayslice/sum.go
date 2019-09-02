@@ -16,3 +16,11 @@ func sumAll(numList [][]int) []int {
 	}
 	return rst
 }
+
+func sumAllTails(numberList [][]int) []int {
+	var rst []int
+	for _, num := range numberList {
+		rst = append(rst, Sum(num[1:]))
+	}
+	return rst
+}
