@@ -1,8 +1,10 @@
 package sum
 
-func Sum(numbers [5]int) (sum int) {
-	for i := 0; i < 5; i++ {
-		sum += numbers[i]
+
+//changeLog : change the param type []int to slice int
+func Sum(numbers []int) (sum int) {
+	for _,v := range numbers{
+		sum += v
 	}
 	return
 }
