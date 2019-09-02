@@ -8,3 +8,9 @@ func Sum(numbers []int) (sum int) {
 	}
 	return
 }
+
+//operation the two slice to one addition slice
+func SumAll(numbersToSum ...[]int) (sums []int) {
+	sums = []int{}
+	return
+}
