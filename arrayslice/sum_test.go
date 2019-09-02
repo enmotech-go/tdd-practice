@@ -35,10 +35,26 @@ func TestSumall(t *testing.T) {
 }
 
 func TestSumAllTails(t *testing.T) {
-	numberList := [][]int{{1, 2, 3}, {4, 5, 6}}
-	got := sumAllTails(numberList)
-	want := []int{5, 11}
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("got %v, want %v, numberList %v", got, want, numberList)
+	assertRst := func(t *testing.T, got, want []int, numberList [][]int) {
+		if !reflect.DeepEqual(want, got) {
+			t.Errorf("got %v, want %v, numberList %v", got, want, numberList)
+		}
 	}
+
+	t.Run("no empty slice", func(t *testing.T) {
+		numberList := [][]int{{1, 2, 3}, {4, 5, 6}}
+		got := sumAllTails(numberList)
+		want := []int{5, 11}
+		if !reflect.DeepEqual(want, got) {
+			t.Errorf("got %v, want %v, numberList %v", got, want, numberList)
+		}
+		assertRst(t, got, want, numberList)
+	})
+
+	t.Run("empty slice", func(t *testing.T) {
+		numberList := [][]int{{}, {4, 5, 6}}
+		got := sumAllTails(numberList)
+		want := []int{0, 11}
+		assertRst(t, got, want, numberList)
+	})
 }

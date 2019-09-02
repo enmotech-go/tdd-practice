@@ -20,7 +20,11 @@ func sumAll(numList [][]int) []int {
 func sumAllTails(numberList [][]int) []int {
 	var rst []int
 	for _, num := range numberList {
-		rst = append(rst, Sum(num[1:]))
+		if len(num) == 0 {
+			rst = append(rst, 0)
+		} else {
+			rst = append(rst, Sum(num[1:]))
+		}
 	}
 	return rst
 }
