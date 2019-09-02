@@ -15,6 +15,5 @@ func SumAll(num ...[]int) (sums []int) {
 	for k, v := range num {
 		sums[k] = Sum(v)
 	}
-
 	return
 }
