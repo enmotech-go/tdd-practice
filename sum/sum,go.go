@@ -16,8 +16,12 @@ func SumAll(numbersToSum ...[]int) (sums []int) {
 
 func SumAllTails(numbersToSum ...[]int) (sum []int) {
 	for _, number := range numbersToSum {
-		tail := number[1:]
-		sum = append(sum, Sum(tail))
+		if len(number) == 0 {
+			sum = append(sum, 0)
+		} else {
+			tail := number[1:]
+			sum = append(sum, Sum(tail))
+		}
 	}
 	return
 }
