@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 const (
 	helloPrefix = "Hello, "
 	spanish = "Spanish"
@@ -13,8 +11,8 @@ func Hello(name string, language string) (str string) {
 	if name == "" {
 		name = "World"
 	}
-	str,ll := greetingPrefix(language)
-	fmt.Print(ll)
+	str = greetingPrefix(language)
+
 	return  str+ name
 }
 
@@ -22,7 +20,7 @@ type a struct {
 	name string
 }
 
-func greetingPrefix(language string) (prefix string,mm string) {
+func greetingPrefix(language string) (prefix string) {
 	switch language {
 	case french:
 		prefix = FrenchHelloPrefix
@@ -31,5 +29,5 @@ func greetingPrefix(language string) (prefix string,mm string) {
 	default:
 		prefix = helloPrefix
 	}
-	return "xx","mm"
+	return
 }

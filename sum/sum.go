@@ -30,3 +30,9 @@ func SumAllTails(numbersToSum ...[]int) (sums []int){
 	}
 	return
 }
+
+//SumAllTails get the slice addition slice without the prefix dom
+func SumAllTails1(numbersToSum ...[]int) (sums []int){
+	 a := []int{1}
+	 return a[0:]
+}
