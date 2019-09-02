@@ -1,5 +1,5 @@
 package class1
 
-func Hello() string {
-	return "Hello ,world"
+func Hello(name string) string {
+	return "Hello ," + name
 }
