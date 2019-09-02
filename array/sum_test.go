@@ -36,8 +36,7 @@ func TestSum(t *testing.T) {
 
 func TestSumAll(t *testing.T) {
 	type args struct {
-		numbers1 []int
-		numbers2 []int
+		numbers [][]int
 	}
 	tests := []struct {
 		name string
@@ -47,15 +46,21 @@ func TestSumAll(t *testing.T) {
 		{
 			"test sum two slices",
 			args{
-				numbers1: []int{1, 2},
-				numbers2: []int{0, 9},
+				numbers: [][]int{{1, 2}, {0, 9}},
 			},
 			[]int{3, 9},
+		},
+		{
+			"test sum three slices",
+			args{
+				numbers: [][]int{{1, 2}, {0, 9}, {4, 4}},
+			},
+			[]int{3, 9, 8},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := SumAll(tt.args.numbers1, tt.args.numbers2); !reflect.DeepEqual(got, tt.want) {
+			if got := SumAll(tt.args.numbers...); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("SumAll() = %v, want %v", got, tt.want)
 			}
 		})
