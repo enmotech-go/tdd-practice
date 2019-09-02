@@ -8,9 +8,16 @@ func Sum(num []int) int {
 	return sum
 }
 
-func SumAll(num ...[]int) (sums []int) {
-	for _, v := range num {
+func SumAll(nums ...[]int) (sums []int) {
+	for _, v := range nums {
 		sums = append(sums, Sum(v))
+	}
+	return
+}
+
+func SumTails(nums ...[]int) (sums []int) {
+	for _, v := range nums {
+		sums = append(sums, Sum(v[1:]))
 	}
 	return
 }
