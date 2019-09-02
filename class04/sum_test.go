@@ -28,8 +28,8 @@ func TestSumAll(t *testing.T) {
 }
 
 func TestSumAllTails(t *testing.T) {
-	got := SumAllTails([]int{1, 2}, []int{3, 4})
-	want := []int{2, 4}
+	got := SumAllTails([]int{1, 2}, []int{3, 4, 5})
+	want := []int{2, 9}
 
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got '%v' want '%v'", got, want)
