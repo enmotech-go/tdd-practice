@@ -1,10 +1,15 @@
 package class5
 
-func Perimeter(w, h float64) float64 {
-	return 2 * (w + h)
+type Rectangle struct {
+	W float64
+	H float64
+}
+
+func Perimeter(r Rectangle) float64 {
+	return 2 * (r.W + r.H)
 }
 
 //noinspection GoUnusedCallResult
-func Area(w, h float64) float64 {
-	return w * h
+func Area(r Rectangle) float64 {
+	return r.W * r.H
 }
