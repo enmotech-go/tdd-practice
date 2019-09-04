@@ -1,11 +1,16 @@
 package struct_tdd
 
+type Rectangle struct {
+	Width float64
+	Height float64
+}
+
 //Perimeter 计算周长函数
-func Perimeter(width,height float64)(perimeter float64){
-	perimeter = 2*(width + height)
+func Perimeter(rectangle Rectangle)(perimeter float64){
+	perimeter = 2*(rectangle.Width + rectangle.Height)
 	return
 }
 
-func Area(width ,height float64) float64 {
-	return width * height
+func Area(rectangle Rectangle) float64 {
+	return rectangle.Width * rectangle.Height
 }
