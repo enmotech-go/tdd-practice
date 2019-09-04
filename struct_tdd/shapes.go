@@ -1,8 +1,14 @@
 package struct_tdd
 
+import "math"
+
 type Rectangle struct {
 	Width float64
 	Height float64
+}
+
+type Circle struct {
+	Radius float64
 }
 
 //Perimeter 计算周长函数
@@ -11,6 +17,12 @@ func Perimeter(rectangle Rectangle)(perimeter float64){
 	return
 }
 
-func Area(rectangle Rectangle) float64 {
-	return rectangle.Width * rectangle.Height
+func (r Rectangle) Area() (area float64) {
+	area = r.Width * r.Height
+	return
+}
+
+func (c Circle) Area() (area float64) {
+	area = math.Pi * c.Radius * c.Radius
+	return
 }
