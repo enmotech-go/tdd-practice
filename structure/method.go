@@ -17,3 +17,8 @@ func (c Circle) Perimeter() float64 {
 func (c Circle) Area() float64 {
 	return math.Pi * c.Radius * c.Radius
 }
+
+type Shape interface {
+	Perimeter() float64
+	Area() float64
+}
