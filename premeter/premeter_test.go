@@ -3,7 +3,8 @@ package premeter
 import "testing"
 
 func TestPerimeter(t *testing.T) {
-	got := Permeter(5.0, 10.0)
+	rectangle := Rectangle{5.0, 10.0}
+	got := Permeter(rectangle)
 	want := 30.0
 
 	if got != want {
@@ -12,7 +13,8 @@ func TestPerimeter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
-	got := Area(12.0, 5.0)
+	rectangle := Rectangle{12.0, 5.0}
+	got := Area(rectangle)
 	want := 60.0
 
 	if got != want {
