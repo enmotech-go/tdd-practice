@@ -2,7 +2,7 @@ package shape
 
 import "testing"
 
-func TestPerimeterEx(t *testing.T) {
+func TestPerimeter(t *testing.T) {
 	rectangle := Rectangle{10.0, 10.0}
 	got := Perimeter(rectangle)
 	want := 40.0
@@ -12,7 +12,7 @@ func TestPerimeterEx(t *testing.T) {
 	}
 }
 
-func TestAreaEx(t *testing.T) {
+func TestArea(t *testing.T) {
 	rectangle := Rectangle{12.0, 6.0}
 	got := Area(rectangle)
 	want := 72.0
