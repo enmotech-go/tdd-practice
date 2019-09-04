@@ -21,12 +21,13 @@ func TestArea(t *testing.T) {
 	}{
 		{Rectangle{12, 8}, 96.0},
 		{Circle{10.0}, math.Pi * 10.0 * 10.0},
+		{Triangle{12.0, 6.0}, 36.0},
 	}
 
 	for _, tt := range tests {
 		got := tt.shape.Area()
 		if got != tt.want {
-			t.Errorf("Area() = %v, want %v", got, tt.want)
+			t.Errorf("Area() = %.2f, want %.2f", got, tt.want)
 		}
 	}
 }
