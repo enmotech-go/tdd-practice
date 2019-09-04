@@ -11,6 +11,10 @@ type Circle struct {
 	R float64
 }
 
+type Shape interface {
+	Area() float64
+}
+
 func Perimeter(r Rectangle) float64 {
 	return 2 * (r.W + r.H)
 }
