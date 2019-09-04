@@ -1,9 +1,14 @@
 package class04
 
-func Perimeter(length, width float64) float64 {
-	return 2 * (length + width)
+type Rectangle struct {
+	Width  float64
+	Height float64
 }
 
-func Area(length, width float64) float64 {
-	return length * width
+func (r Rectangle) Perimeter() float64 {
+	return 2 * (r.Height + r.Width)
+}
+
+func (r Rectangle) Area() float64 {
+	return r.Width * r.Height
 }
