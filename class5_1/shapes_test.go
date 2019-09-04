@@ -30,9 +30,12 @@ func TestArea(t *testing.T) {
 	}
 
 	for _, tt := range areaTests {
-		got := tt.shape.Area()
-		if tt.want != got {
-			t.Errorf("got %.2f want %.2f", got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.shape.Area()
+			if tt.want != got {
+				t.Errorf("got %.2f want %.2f", got, tt.want)
+			}
+		})
+
 	}
 }
