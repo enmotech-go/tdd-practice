@@ -35,5 +35,5 @@ func (circle Circle) Area() float64 {
 }
 
 func (triangle Triangle) Area() float64 {
-	return 0
+	return triangle.Height * triangle.Base / 2
 }
