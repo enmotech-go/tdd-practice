@@ -11,6 +11,10 @@ type Circle struct {
 	Radius float64
 }
 
+type Shape interface {
+	Area() float64
+}
+
 //Perimeter 计算周长函数
 func Perimeter(rectangle Rectangle)(perimeter float64){
 	perimeter = 2*(rectangle.Width + rectangle.Height)
