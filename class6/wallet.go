@@ -1,13 +1,14 @@
 package class6
 
+type Bitcoin int
 type Wallet struct {
-	balance int
+	balance Bitcoin
 }
 
-func (wallet *Wallet) Deposit(amount int) {
+func (wallet *Wallet) Deposit(amount Bitcoin) {
 	wallet.balance += amount
 }
 
-func (wallet *Wallet) Balance() int {
+func (wallet *Wallet) Balance() Bitcoin {
 	return wallet.balance
 }
