@@ -5,8 +5,8 @@ type Rectangle struct {
 	H float64
 }
 
-func Perimeter(w, h float64) float64 {
-	return 2 * (w + h)
+func Perimeter(r Rectangle) float64 {
+	return 2 * (r.W + r.H)
 }
 
 func Area(r Rectangle) float64 {
