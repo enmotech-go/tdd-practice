@@ -10,15 +10,14 @@ type Rectangle struct {
 type Circle struct {
 	Radius float64
 }
+type Shape interface {
+	Area() float64
+}
 
 func Perimeter(r Rectangle) float64 {
 	return 2 * (r.W + r.H)
 }
 
-//noinspection GoUnusedCallResult
-func Area(r Rectangle) float64 {
-	return r.W * r.H
-}
 func (r *Rectangle) Area() float64 {
 	return r.W * r.H
 }
