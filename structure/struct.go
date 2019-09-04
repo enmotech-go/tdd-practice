@@ -1,9 +1,14 @@
 package structure
 
-func Premeter(width, height float64) float64 {
-	return (width + height) * 2
+type Rectangle struct {
+	Width  float64
+	Height float64
 }
 
-func Area(width, height float64) float64 {
-	return width * height
+func Perimeter2(rectangle Rectangle) float64 {
+	return (rectangle.Height + rectangle.Width) * 2
+}
+
+func Area2(rectangle Rectangle) float64 {
+	return rectangle.Height * rectangle.Width
 }

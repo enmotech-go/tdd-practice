@@ -1,13 +1,10 @@
 package structure
 
-import (
-	"testing"
-)
+import "testing"
 
-func TestPremeter(t *testing.T) {
+func TestPerimeter2(t *testing.T) {
 	type args struct {
-		width  float64
-		height float64
+		rectangle Rectangle
 	}
 	tests := []struct {
 		name string
@@ -15,27 +12,25 @@ func TestPremeter(t *testing.T) {
 		want float64
 	}{
 		{
-			"test calculate premeter",
+			"test calculate perimeter of rectangle",
 			args{
-				width:  10.1,
-				height: 6.9,
+				rectangle: Rectangle{Width: 10.1, Height: 6.9},
 			},
-			34,
+			34.0,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Premeter(tt.args.width, tt.args.height); got != tt.want {
-				t.Errorf("Premeter() = %v, want %v", got, tt.want)
+			if got := Perimeter2(tt.args.rectangle); got != tt.want {
+				t.Errorf("Perimeter2() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestArea(t *testing.T) {
+func TestArea2(t *testing.T) {
 	type args struct {
-		width  float64
-		height float64
+		rectangle Rectangle
 	}
 	tests := []struct {
 		name string
@@ -43,18 +38,17 @@ func TestArea(t *testing.T) {
 		want float64
 	}{
 		{
-			"test calculate area",
+			"test calculate area of rectangle",
 			args{
-				width:  11.2,
-				height: 6.5,
+				rectangle: Rectangle{Width: 11.2, Height: 6.5},
 			},
 			72.8,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := Area(tt.args.width, tt.args.height); got != tt.want {
-				t.Errorf("Area() = %v, want %v", got, tt.want)
+			if got := Area2(tt.args.rectangle); got != tt.want {
+				t.Errorf("Area2() = %v, want %v", got, tt.want)
 			}
 		})
 	}
