@@ -22,9 +22,11 @@ func TestArea(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got := c.shape.Area()
-		if got != c.want {
-			t.Errorf("%s got %.2f want %.2f", c.desc, got, c.want)
-		}
+		t.Run(c.desc, func(t *testing.T) {
+			got := c.shape.Area()
+			if got != c.want {
+				t.Errorf("%s got %.2f want %.2f", c.desc, got, c.want)
+			}
+		})
 	}
 }
