@@ -1,5 +1,9 @@
 package class6
 
+import (
+	"errors"
+)
+
 type Bitcoin int
 type Wallet struct {
 	balance Bitcoin
@@ -13,6 +17,10 @@ func (wallet *Wallet) Balance() Bitcoin {
 	return wallet.balance
 }
 
-func (wallet *Wallet) Withdraw(bitcoin Bitcoin) {
+func (wallet *Wallet) Withdraw(bitcoin Bitcoin) error {
+	if bitcoin > wallet.balance {
+		return errors.New("oh no")
+	}
 	wallet.balance -= bitcoin
+	return nil
 }
