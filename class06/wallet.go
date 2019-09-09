@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+var InsufficientFundsError = errors.New("cannot withdraw, insufficient funds")
+
 type Bitcoin int
 
 type Wallet struct {
@@ -21,7 +23,7 @@ func (w *Wallet) Balance() Bitcoin {
 
 func (w *Wallet) Withdraw(amount Bitcoin) (err error) {
 	if amount > w.balance {
-		return errors.New("cannot withdraw, insufficient funds")
+		return InsufficientFundsError
 	}
 	w.balance -= amount
 	return
