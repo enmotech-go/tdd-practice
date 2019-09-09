@@ -1,16 +1,15 @@
 package pointer
 
-import "fmt"
+type Bitcoin int
 
 type Wallet struct {
-	balance int
+	balance Bitcoin
 }
 
-func (w *Wallet) Deposit(amount int) {
-	fmt.Println("address of balance in Deposit is", &w.balance)
+func (w *Wallet) Deposit(amount Bitcoin) {
 	w.balance += amount
 }
 
-func (w *Wallet) Balance() int {
+func (w *Wallet) Balance() Bitcoin {
 	return w.balance
 }
