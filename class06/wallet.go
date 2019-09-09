@@ -1,6 +1,7 @@
 package class06
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -19,6 +20,9 @@ func (w *Wallet) Balance() Bitcoin {
 }
 
 func (w *Wallet) Withdraw(amount Bitcoin) (err error) {
+	if amount > w.balance {
+		return errors.New("not have enough balance")
+	}
 	w.balance -= amount
 	return
 }
