@@ -1,13 +1,13 @@
 package wallet
 
 import (
+	"errors"
 	"fmt"
-	"gitlab.enmotech.com/golang/gin-demo/plugin/errors"
 )
 
 type Bitcoin int
 
-var InsufficientFundsError = errors.New(1, "cannot withdraw, insufficient funds")
+var InsufficientFundsError = errors.New("cannot withdraw, insufficient funds")
 
 type Stringer interface {
 	String() string
