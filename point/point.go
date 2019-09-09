@@ -2,14 +2,11 @@ package point
 
 import (
 	"errors"
-	"fmt"
 )
 
-type Bitcoin int
+var InsufficientFundsError = errors.New("cannot withdraw, insufficient funds")
 
-func (b Bitcoin) String() string {
-	return fmt.Sprintf("%d BTC", b)
-}
+type Bitcoin int
 
 type Wallet struct {
 	balance Bitcoin
@@ -25,7 +22,7 @@ func (w *Wallet) Balance() Bitcoin {
 
 func (w *Wallet) Withdraw(amount Bitcoin) error {
 	if amount > w.balance {
-		return errors.New("cannot withdraw, insufficient funds")
+		return InsufficientFundsError
 	}
 	w.balance -= amount
 	return nil
