@@ -43,7 +43,7 @@ func assertError(t *testing.T, err error, want error) {
 		t.Errorf("wanted an error but didnt get one")
 	}
 	if err != want {
-		t.Errorf("got '%s', want '%s'", err, want)
+		t.Errorf("got '%s', want '%s'", err.Error(), want)
 	}
 }
 
