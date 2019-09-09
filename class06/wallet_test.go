@@ -1,10 +1,19 @@
 package class06
 
 import (
+	"fmt"
 	"testing"
 )
 
 func TestWallet(t *testing.T) {
+	t.Run("Deposit", func(t *testing.T) {
+		balance := Bitcoin(10)
+		got := balance.String()
+		want := fmt.Sprintf("%d BTC", balance)
+		if got != want {
+			t.Errorf("bitcoin String() = '%v', want '%v'", got, want)
+		}
+	})
 	t.Run("Deposit", func(t *testing.T) {
 		wallet := Wallet{}
 		wallet.Deposit(Bitcoin(10))
