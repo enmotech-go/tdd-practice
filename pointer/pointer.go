@@ -1,6 +1,9 @@
 package pointer
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/pkg/errors"
+)
 
 
 type Bitcoin int
@@ -28,8 +31,12 @@ func (w *Wallet) Balance() (balance Bitcoin){
 }
 
 //Withdraw get bitcoin from wallet
-func(w *Wallet) Withdraw(amount Bitcoin){
+func(w *Wallet) Withdraw(amount Bitcoin)(err error){
+	if amount > w.balance {
+		return errors.New("oh no")
+	}
 	w.balance -= amount
+	return
 }
 
 func (b Bitcoin) String() (str string){
