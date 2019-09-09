@@ -1,13 +1,15 @@
 package pointer
 
+type Bitcoin int
+
 type Wallet struct {
-	balance int
+	balance Bitcoin
 }
 
-func (w *Wallet) Deposit(coin int) {
+func (w *Wallet) Deposit(coin Bitcoin) {
 	w.balance += coin
 }
 
-func (w *Wallet) Balance() int {
+func (w *Wallet) Balance() Bitcoin {
 	return w.balance
 }
