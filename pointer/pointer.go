@@ -1,11 +1,18 @@
 package pointer
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type Bitcoin int
 
 type Wallet struct {
 	balance Bitcoin
+}
+
+func (b Bitcoin) String() string {
+	return fmt.Sprintf("%d BTC", b)
 }
 
 func (w *Wallet) Deposit(amount Bitcoin) {
