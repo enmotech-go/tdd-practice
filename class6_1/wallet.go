@@ -22,8 +22,9 @@ func (wallet *Wallet) GetBalance() Bitcoin {
 	return wallet.balance
 }
 
-func (wallet *Wallet) Withdraw(amount Bitcoin) {
+func (wallet *Wallet) Withdraw(amount Bitcoin) error {
 	wallet.balance -= amount
+	return nil
 }
 
 func (b Bitcoin) String() string {
