@@ -9,7 +9,12 @@ func TestSearch(t *testing.T) {
 
 	got := Search(dictionary, "test")
 	want := "this is a test"
+	assertStrings(t, got, want)
+}
+
+func assertStrings(t *testing.T, got, want string) {
+	t.Helper()
 	if got != want {
-		t.Errorf("want %s, got %s", want, got)
+		t.Errorf("got %s, want %s", got, want)
 	}
 }
