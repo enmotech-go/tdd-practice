@@ -1,9 +1,15 @@
 package mapp
 
-import "errors"
+type DictionaryErr string
 
-var NotExistError = errors.New("could not find the word you were looking for")
-var ExistError = errors.New("word already exist")
+func (e DictionaryErr) Error() string {
+	return string(e)
+}
+
+const (
+	NotExistError = DictionaryErr("could not find the word you were looking for")
+	ExistError    = DictionaryErr("word already exist")
+)
 
 type Dictionary map[string]string
 
@@ -13,6 +19,22 @@ func (dictionary Dictionary) Search(key string) (string, error) {
 		return "", NotExistError
 	}
 	return value, nil
+}
+func (d Dictionary) Delete(word string) {
+	delete(d, word)
+}
+
+func (dictionary Dictionary) Update(word, value string) error {
+	_, err := dictionary.Search(word)
+	switch err {
+	case NotExistError:
+		return NotExistError
+	case nil:
+		dictionary[word] = value
+	default:
+		return err
+	}
+	return nil
 }
 
 func (dictionary Dictionary) Add(key, value string) error {
