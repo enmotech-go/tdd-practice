@@ -3,7 +3,8 @@ package mapp
 import "testing"
 
 func TestSearch(t *testing.T) {
-	dictionary := Dictionary{"test": "this is just test"}
+	dictionary := Dictionary{}
+	dictionary.Add("test", "this is just test")
 	t.Run("know word", func(t *testing.T) {
 		got, _ := dictionary.Search("test")
 		want := "this is just test"
