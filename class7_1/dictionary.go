@@ -1,12 +1,18 @@
 package class7_1
 
-import "errors"
-
 //Dictionary 自定义一个map类型
 type Dictionary map[string]string
 
-var ErrNotFound = errors.New("could not find the word you were looking for")
-var ErrWordExists = errors.New("cannot add word because it already exists")
+const (
+	ErrNotFound   = DictionaryErr("could not find the word you were looking for")
+	ErrWordExists = DictionaryErr("cannot add word because it already exists")
+)
+
+type DictionaryErr string
+
+func (d DictionaryErr) Error() string {
+	return string(d)
+}
 
 //Search Dictionary Search
 func (d Dictionary) Search(word string) (string, error) {
@@ -30,4 +36,9 @@ func (d Dictionary) Add(key, value string) error {
 	}
 
 	return nil
+}
+
+//Update Dictionary Update
+func (d Dictionary) Update(key, value string) {
+	d[key] = value
 }
