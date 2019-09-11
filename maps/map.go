@@ -1,10 +1,8 @@
 package maps
 
-import "errors"
-
-var (
-	ErrNotFound = errors.New("not found")
-	ErrExist    = errors.New("exist")
+const (
+	ErrNotFound = DictionaryErr("not found")
+	ErrExist    = DictionaryErr("exist")
 )
 
 type Dictionary map[string]string
@@ -29,4 +27,10 @@ func (d Dictionary) Add(word, def string) error {
 		return err
 	}
 	return nil
+}
+
+type DictionaryErr string
+
+func (e DictionaryErr) Error() string {
+	return string(e)
 }
