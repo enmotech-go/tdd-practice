@@ -1,6 +1,9 @@
 package class7_1
 
+//Dictionary 自定义一个map类型
+type Dictionary map[string]string
+
 //Search Search
-func Search(dictionary map[string]string, word string) string {
-	return dictionary[word]
+func (d Dictionary) Search(word string) string {
+	return d[word]
 }
