@@ -4,6 +4,18 @@ import (
 	"testing"
 )
 
+func TestDelete(t *testing.T) {
+	word := "test"
+	dictionary := Dictionary{word: "test definition"}
+
+	dictionary.Delete(word)
+
+	_, err := dictionary.Search(word)
+	if err != ErrNotFound {
+		t.Errorf("Expected '%s' to be deleted", word)
+	}
+}
+
 func TestUpdate(t *testing.T) {
 
 	t.Run("exists word", func(t *testing.T) {
