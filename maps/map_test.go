@@ -41,11 +41,22 @@ func TestAdd(t *testing.T) {
 func TestUpdate(t *testing.T) {
 	word := "test"
 	def := "this is a test"
-	dictionary := Dictionary{word: def}
-	newDef := "updated test"
 
-	dictionary.Update(word, newDef)
-	assertDefinition(t, dictionary, word, newDef)
+	t.Run("test exist word", func(t *testing.T) {
+		dictionary := Dictionary{word: def}
+		newDef := "updated test"
+		err := dictionary.Update(word, newDef)
+
+		assertError(t, err, nil)
+		assertDefinition(t, dictionary, word, newDef)
+	})
+
+	t.Run("test non-exist word", func(t *testing.T) {
+		dictionary := Dictionary{}
+		err := dictionary.Update(word, def)
+
+		assertError(t, err, ErrNotExist)
+	})
 }
 
 func assertStrings(t *testing.T, got, want string) {
