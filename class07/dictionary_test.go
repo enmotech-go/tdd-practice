@@ -7,9 +7,20 @@ import (
 func TestSearch(t *testing.T) {
 	dictionary := Dictionary{"test": "this is just a test"}
 
-	got := dictionary.Search("test")
-	want := "this is just a test"
-	assertStrings(t, got, want)
+	t.Run("known key word", func(t *testing.T) {
+		got, _ := dictionary.Search("test")
+		want := "this is just a test"
+		assertStrings(t, got, want)
+	})
+	t.Run("unknown key word", func(t *testing.T) {
+		got, err := dictionary.Search("unknown test")
+		want := "could not find the word you were looking for"
+
+		if err == nil {
+			t.Fatal("expected to get an error.")
+		}
+		assertStrings(t, got, want)
+	})
 }
 
 func assertStrings(t *testing.T, got, want string) {
