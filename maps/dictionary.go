@@ -1,8 +1,10 @@
 package maps
 
+type Dictionary map[string]string
 
 //search from dictionary
-func Search(dictionary map[string]string, word string) string {
+func (d Dictionary)Search( word string) string {
 
-	return dictionary[word]
+	return d[word]
 }
+
