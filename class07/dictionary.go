@@ -1,5 +1,7 @@
 package class07
 
-func Search(dictionary map[string]string, keyword string) string {
-	return dictionary[keyword]
+type Dictionary map[string]string
+
+func (dic Dictionary) Search(keyword string) string {
+	return dic[keyword]
 }
