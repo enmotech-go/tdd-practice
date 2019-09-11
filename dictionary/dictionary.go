@@ -12,6 +12,10 @@ func (e DictionaryErr) Error() string {
 	return string(e)
 }
 
+func (e DictionaryErr) String() string {
+	return string(e)
+}
+
 type Dictionary map[string]string
 
 func (d Dictionary) Search(key string) (string, error) {
@@ -47,4 +51,8 @@ func (d Dictionary) Update(key, value string) error {
 		return err
 	}
 	return nil
+}
+
+func (d Dictionary) Delete(key string) {
+	delete(d, key)
 }
