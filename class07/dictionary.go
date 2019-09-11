@@ -15,5 +15,5 @@ func (dic Dictionary) Search(keyword string) (result string, err error) {
 }
 
 func (dic Dictionary) Add(word, definition string) {
-
+	dic[word] = definition
 }
