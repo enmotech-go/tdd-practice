@@ -1,5 +1,7 @@
 package class06
 
-func Search(dictionary map[string]string, word string) string {
+type Dictionary map[string]string
+
+func (dictionary Dictionary) Search(word string) string {
 	return dictionary[word]
 }
