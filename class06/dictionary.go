@@ -10,6 +10,10 @@ var (
 	ErrWordDoesNotExist = errors.New("cannot update word because it does not exist")
 )
 
+func (d Dictionary) Delete(word string) {
+	delete(d, word)
+}
+
 func (d Dictionary) Update(word, definition string) error {
 	_, err := d.Search(word)
 
