@@ -14,21 +14,31 @@ func assertDefinition(t *testing.T, dictionary Dictionary, word, definition stri
 		t.Errorf("got '%s' want '%s'", got, definition)
 	}
 }
-func TestAdd(t *testing.T) {
-	dictionary := Dictionary{}
-	word := "test"
-	definition := "this is just a test"
-	dictionary.Add("test", definition)
-
-	assertDefinition(t, dictionary, word, definition)
-}
 
 func assertError(t *testing.T, got, want error) {
 	t.Helper()
 
 	if got != want {
-		t.Errorf("got error '%s' want '%s'", got, want)
+		t.Errorf("go error '%s' want '%s'", got, want)
 	}
+}
+func TestAdd(t *testing.T) {
+	t.Run("existing word", func(t *testing.T) {
+		word := "test"
+		definition := "this is just a test"
+		dictionary := Dictionary{word: definition}
+		dictionary.Add(word, definition)
+		assertDefinition(t, dictionary, word, definition)
+	})
+
+	t.Run("new word", func(t *testing.T) {
+		word := "test"
+		definition := "this is just a test"
+		dictionary := Dictionary{}
+		err := dictionary.Add(word, definition)
+		assertError(t, err, nil)
+		assertDefinition(t, dictionary, word, definition)
+	})
 }
 
 func assertStrings(t *testing.T, got, want string) {
