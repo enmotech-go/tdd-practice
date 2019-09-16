@@ -2,20 +2,25 @@ package class06
 
 import "testing"
 
-func TestAdd(t *testing.T) {
-	dictionary := Dictionary{}
-	dictionary.Add("test", "this is just a test")
+func assertDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
+	t.Helper()
 
-	want := "this is just a test"
-	got, err := dictionary.Search("test")
-
+	got, err := dictionary.Search(word)
 	if err != nil {
 		t.Fatal("should find added word:", err)
 	}
 
-	if want != got {
-		t.Errorf("got '%s' want '%s'", got, want)
+	if definition != got {
+		t.Errorf("got '%s' want '%s'", got, definition)
 	}
+}
+func TestAdd(t *testing.T) {
+	dictionary := Dictionary{}
+	word := "test"
+	definition := "this is just a test"
+	dictionary.Add("test", definition)
+
+	assertDefinition(t, dictionary, word, definition)
 }
 
 func assertError(t *testing.T, got, want error) {
