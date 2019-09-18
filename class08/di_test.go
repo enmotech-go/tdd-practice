@@ -1,4 +1,4 @@
-package class08
+package main
 
 import (
 	"bytes"
