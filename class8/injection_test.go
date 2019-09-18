@@ -1,4 +1,4 @@
-package injection
+package main
 
 import (
 	"bytes"

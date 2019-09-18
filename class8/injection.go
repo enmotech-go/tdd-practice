@@ -1,10 +1,15 @@
-package injection
+package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
+	"os"
 )
 
-func Greet(buffer *bytes.Buffer, name string) {
+func Greet(buffer io.Writer, name string) {
 	fmt.Fprintf(buffer, "Hello ,%s", name)
+}
+
+func main() {
+	Greet(os.Stdout, "Elodie")
 }
