@@ -3,11 +3,13 @@ package main
 import (
 	"bytes"
 	"testing"
+	"time"
 )
 
 func TestCountdown(t *testing.T) {
 	buffer := &bytes.Buffer{}
-	Countdown(buffer)
+	sleeper := &SpySleeper{1 * time.Second}
+	Countdown(buffer, sleeper)
 	got := buffer.String()
 	want := `3
 2
