@@ -1,4 +1,4 @@
-package mocking
+package  main
 
 import (
 	"bytes"
@@ -13,7 +13,9 @@ func TestCountdown(t *testing.T) {
 	got := buffer.String()
 	want := "3"
 
+
 	if got != want {
 		t.Errorf("got '%s' want '%s'", got, want)
 	}
 }
+
