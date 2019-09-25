@@ -10,6 +10,8 @@ import (
 const (
 	countdownStart = 3
 	finalWord      = "Go!"
+	write          = "write"
+	sleep          = "sleep"
 )
 
 type Sleeper interface {
@@ -37,8 +39,22 @@ func Countdown(out io.Writer, sleeper Sleeper) {
 		sleeper.Sleep()
 		fmt.Fprintln(out, i)
 	}
+
 	sleeper.Sleep()
 	fmt.Fprint(out, finalWord)
+}
+
+type CountdownOperationSpy struct {
+	Calls []string
+}
+
+func (s *CountdownOperationSpy) Sleep() {
+	s.Calls = append(s.Calls, sleep)
+}
+
+func (s *CountdownOperationSpy) Write(p []byte) (n int, err error) {
+	s.Calls = append(s.Calls, write)
+	return
 }
 
 func main() {
