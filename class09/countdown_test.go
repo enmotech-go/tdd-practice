@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"reflect"
 	"testing"
-	"time"
 )
 
 func TestCountdown(t *testing.T) {
@@ -27,8 +26,7 @@ Go!`
 
 	t.Run("sleep after every print", func(t *testing.T) {
 		spySleepPrinter := &CountdownOperationsSpy{}
-		sleeper := &ConfigurableSleeper{1 * time.Second}
-		Countdown(spySleepPrinter, sleeper)
+		Countdown(spySleepPrinter, spySleepPrinter)
 
 		want := []string{
 			sleep,
@@ -40,7 +38,7 @@ Go!`
 			sleep,
 			write,
 		}
-		if reflect.DeepEqual(want, spySleepPrinter.Calls) {
+		if !reflect.DeepEqual(want, spySleepPrinter.Calls) {
 			t.Errorf("wanted calls %v got %v", want, spySleepPrinter.Calls)
 		}
 	})
