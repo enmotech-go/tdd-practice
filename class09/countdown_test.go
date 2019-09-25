@@ -1,4 +1,4 @@
-package class09
+package main
 
 import (
 	"bytes"

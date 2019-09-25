@@ -1,10 +1,15 @@
-package class09
+package main
 
 import (
-	"bytes"
 	"fmt"
+	"io"
+	"os"
 )
 
-func Countdown(buffer *bytes.Buffer) {
-	fmt.Fprint(buffer, "3")
+func main() {
+	Countdown(os.Stdout)
+}
+
+func Countdown(out io.Writer) {
+	fmt.Fprint(out, "3")
 }
