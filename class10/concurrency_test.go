@@ -3,6 +3,7 @@ package class10
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 func mockWebsiteChecker(url string) bool {
@@ -21,6 +22,8 @@ func TestCheckWebsites(t *testing.T) {
 	checkWebsites := CheckWebsites(mockWebsiteChecker, websites)
 	want := len(websites)
 	got := len(checkWebsites)
+
+	t.Log(checkWebsites)
 	if got != want {
 		t.Fatalf("Wanted %v, got %v", want, got)
 	}
@@ -31,5 +34,20 @@ func TestCheckWebsites(t *testing.T) {
 	}
 	if !reflect.DeepEqual(checkWebsites, expectedResults) {
 		t.Fatalf("Wanted %v, got %v", expectedResults, checkWebsites)
+	}
+}
+
+func slowStubWebsiteChecker(_ string) bool {
+	time.Sleep(200 * time.Microsecond)
+	return true
+}
+
+func BenchmarkCheckWebsites(b *testing.B) {
+	urls := make([]string, 100)
+	for i := 0; i < len(urls); i++ {
+		urls[i] = "a url"
+	}
+	for i := 0; i < b.N; i++ {
+		CheckWebsites(slowStubWebsiteChecker, urls)
 	}
 }
