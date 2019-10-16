@@ -3,7 +3,13 @@ package concurrency
 import (
 	"reflect"
 	"testing"
+	"time"
 )
+
+func slowStubWebsiteChecker(_ string) bool {
+	time.Sleep(20 * time.Millisecond)
+	return true
+}
 
 func mockWebsiteChecker(url string) bool {
 	if url == "waat://furhurterwe.geds" {
@@ -11,6 +17,18 @@ func mockWebsiteChecker(url string) bool {
 	}
 	return true
 }
+
+func BenchmarkCheckWebsites(b *testing.B) {
+	urls := make([]string, 100)
+	for i := 0; i < len(urls); i++ {
+		urls[i] = "a url"
+	}
+
+	for i := 0; i < b.N; i++ {
+		CheckWebsites(slowStubWebsiteChecker, urls)
+	}
+}
+
 func TestCheckWebsites(t *testing.T) {
 	websites := []string{
 		"http://google.com",
@@ -23,7 +41,7 @@ func TestCheckWebsites(t *testing.T) {
 	want := len(websites)
 	got := len(actualResults)
 	if want != got {
-		t.Fatalf("Wanted %v, got %v", want, got)
+		t.Fatalf("Wanted %v, got %v", websites, actualResults)
 	}
 
 	expectedResults := map[string]bool{
