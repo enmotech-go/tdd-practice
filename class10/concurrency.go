@@ -1,27 +1,33 @@
 package class10
 
-import "time"
-
 type WebsiteChecker func(string) bool
 
-type result struct {
+type Result struct {
 	string
 	bool
 }
 
 func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
 	results := make(map[string]bool)
-	resultChannel := make(chan result)
+	resultChannel := make(chan *Result)
+
 	for _, url := range urls {
 		go func(url string) {
-			resultChannel <- result{url, wc(url)}
+			resultChannel <- &Result{url, wc(url)}
 		}(url)
 	}
 
+	//for i := 0; i < len(urls); i++ {
+	//	result := <-resultChannel
+	//	results[result.string] = result.bool
+	//}
+
 	for i := 0; i < len(urls); i++ {
-		result := <-resultChannel
-		results[result.string] = result.bool
+		select {
+		case result1 := <-resultChannel:
+			results[result1.string] = result1.bool
+
+		}
 	}
-	time.Sleep(2 * time.Second)
 	return results
 }
