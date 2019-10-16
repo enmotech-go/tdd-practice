@@ -1,5 +1,8 @@
 package concurrency
 
+import (
+)
+
 type WebsiteChecker func(string) bool
 
 func CheckWebsites(wc WebsiteChecker, urls []string) map[string]bool {
