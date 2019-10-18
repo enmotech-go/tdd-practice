@@ -6,21 +6,22 @@ import (
 )
 
 const (
-	WordFizz     = "Fizz"
-	WordBuzz     = "Buzz"
-	WordFizzBuzz = WordFizz + WordBuzz
+	WordFizz = "Fizz"
+	WordBuzz = "Buzz"
 )
 
 func Converter(i int) string {
-	if i%3 == 0 && i%5 == 0 {
-		return WordFizzBuzz
-	} else if i%3 == 0 {
-		return WordFizz
-	} else if i%5 == 0 {
-		return WordBuzz
-	} else {
-		return fmt.Sprintf("%d", i)
+	var result string
+	if i%3 == 0 {
+		result += WordFizz
 	}
+	if i%5 == 0 {
+		result += WordBuzz
+	}
+	if result == "" {
+		result += fmt.Sprintf("%d", i)
+	}
+	return result
 }
 
 func FizzBuzz(w io.Writer, n int) {
