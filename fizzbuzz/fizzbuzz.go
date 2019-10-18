@@ -10,14 +10,15 @@ const (
 type FizzBuzz struct{}
 
 func (FizzBuzz) Convert(n int) string {
-	if n%3 == 0 && n%5 == 0 {
-		return WordFizz + WordBuzz
-	}
+	var result string
 	if n%3 == 0 {
-		return WordFizz
+		result += WordFizz
 	}
 	if n%5 == 0 {
-		return WordBuzz
+		result += WordBuzz
 	}
-	return fmt.Sprintf("%d", n)
+	if result == "" {
+		result = fmt.Sprintf("%d", n)
+	}
+	return result
 }
