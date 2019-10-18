@@ -1,64 +1,46 @@
 package fizzbuzz
 
-import (
-	"bytes"
-	"testing"
-)
+import "testing"
 
-func TestFizzBuzz(t *testing.T) {
+func TestFizzBuzz_Convert(t *testing.T) {
 	type args struct {
 		n int
 	}
 	tests := []struct {
-		name  string
-		args  args
-		wantW string
+		name string
+		f    FizzBuzz
+		args args
+		want string
 	}{
 		{
 			"test_3",
+			FizzBuzz{},
 			args{n: 3},
-			`1
-2
-Fizz
-`,
+			WordFizz,
 		},
 		{
 			"test_5",
+			FizzBuzz{},
 			args{n: 5},
-			`1
-2
-Fizz
-4
-Buzz
-`,
+			WordBuzz,
 		},
 		{
 			"test_15",
+			FizzBuzz{},
 			args{n: 15},
-			`1
-2
-Fizz
-4
-Buzz
-Fizz
-7
-8
-Fizz
-Buzz
-11
-Fizz
-13
-14
-FizzBuzz
-`,
+			WordFizz + WordBuzz,
+		},
+		{
+			"test_others",
+			FizzBuzz{},
+			args{n: 4},
+			"4",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			w := &bytes.Buffer{}
-			FizzBuzz(w, tt.args.n)
-			if gotW := w.String(); gotW != tt.wantW {
-				t.Errorf("FizzBuzz() = %v, want %v", gotW, tt.wantW)
+			if got := tt.f.Convert(tt.args.n); got != tt.want {
+				t.Errorf("FizzBuzz.Convert() = %v, want %v", got, tt.want)
 			}
 		})
 	}

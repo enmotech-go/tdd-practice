@@ -1,31 +1,23 @@
 package fizzbuzz
 
-import (
-	"fmt"
-	"io"
-)
+import "fmt"
 
 const (
 	WordFizz = "Fizz"
 	WordBuzz = "Buzz"
 )
 
-func Converter(i int) string {
-	var result string
-	if i%3 == 0 {
-		result += WordFizz
-	}
-	if i%5 == 0 {
-		result += WordBuzz
-	}
-	if result == "" {
-		result += fmt.Sprintf("%d", i)
-	}
-	return result
-}
+type FizzBuzz struct{}
 
-func FizzBuzz(w io.Writer, n int) {
-	for i := 1; i < n+1; i++ {
-		fmt.Fprintf(w, "%s\n", Converter(i))
+func (FizzBuzz) Convert(n int) string {
+	if n%3 == 0 && n%5 == 0 {
+		return WordFizz + WordBuzz
 	}
+	if n%3 == 0 {
+		return WordFizz
+	}
+	if n%5 == 0 {
+		return WordBuzz
+	}
+	return fmt.Sprintf("%d", n)
 }
