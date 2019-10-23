@@ -7,6 +7,9 @@ type FizzBuzz struct {
 }
 
 func (fb FizzBuzz)Number()  string {
+	if fb.input%3==0&&fb.input%5==0{
+		return "FizzBuzz"
+	}
 	if fb.input%3==0{
 		return "Fizz"
 	}
