@@ -17,6 +17,10 @@ func TestFizzbuzz(t *testing.T) {
 		{In: 4, Wnat: "4"},
 		{In: 5, Wnat: "buzz"},
 		{In: 15, Wnat: "fizzbuzz"},
+		{In: 51, Wnat: "fizzbuzz"},
+		{In: 52, Wnat: "buzz"},
+		{In: 31, Wnat: "fizz"},
+		{In: 503, Wnat: "fizzbuzz"},
 	}
 	for _, c := range cases {
 		got := Fizzbuzz(c.In)
