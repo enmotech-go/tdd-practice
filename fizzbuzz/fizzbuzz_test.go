@@ -14,15 +14,19 @@ func TestFizzBuzz(t *testing.T) {
 		assertEqual(t, FizzBuzz(1), "1")
 	})
 
-	t.Run("test show return fizz", func(t *testing.T) {
+	t.Run("test should return fizz", func(t *testing.T) {
 		assertEqual(t, FizzBuzz(3), "fizz")
 	})
 
-	t.Run("test show return buzz", func(t *testing.T) {
+	t.Run("test should return buzz", func(t *testing.T) {
 		assertEqual(t, FizzBuzz(5), "buzz")
 	})
 
-	t.Run("test show return fizzbuzz", func(t *testing.T) {
+	t.Run("test should return fizzbuzz", func(t *testing.T) {
 		assertEqual(t, FizzBuzz(15), "fizzbuzz")
+	})
+
+	t.Run("test should return fizzbuzz with 51", func(t *testing.T) {
+		assertEqual(t, FizzBuzz(51), "fizzbuzz")
 	})
 }

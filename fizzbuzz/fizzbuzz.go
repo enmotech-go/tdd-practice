@@ -1,14 +1,24 @@
 package fizzbuzz
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func FizzBuzz(s int64) string {
-	if s%15 == 0 {
+	if IsRelatedTo(s, 3) && IsRelatedTo(s, 5) {
 		return "fizzbuzz"
-	} else if s%3 == 0 {
+	} else if IsRelatedTo(s, 3) {
 		return "fizz"
-	} else if s%5 == 0 {
+	} else if IsRelatedTo(s, 5) {
 		return "buzz"
 	}
 	return fmt.Sprintf("%d", s)
+}
+
+func IsRelatedTo(s, n int64) bool {
+	if s%n == 0 {
+		return true
+	}
+	return strings.Contains(fmt.Sprintf("%d", s), fmt.Sprintf("%d", n))
 }
