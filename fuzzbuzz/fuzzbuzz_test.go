@@ -9,14 +9,22 @@ func TestFuzzBuzz(t *testing.T) {
 			t.Errorf("got '%s' want '%s'", got, want)
 		}
 	}
-	t.Run("saying fizz buzz", func(t *testing.T) {
+	t.Run("saying number", func(t *testing.T) {
 		result := FizzBuzz(1)
 		got := "1"
 		assertCorrectMessage(t,result,got)
 	})
 
+
+
 	t.Run("get fizz",func(t *testing.T){
 		result := FizzBuzz(3)
+		got := Fizz
+		assertCorrectMessage(t,result,got)
+	})
+
+	t.Run("saying fizz", func(t *testing.T) {
+		result := FizzBuzz(13)
 		got := Fizz
 		assertCorrectMessage(t,result,got)
 	})

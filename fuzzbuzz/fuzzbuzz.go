@@ -1,6 +1,9 @@
 package fuzzbuzz
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 const(
 	Fizz = "fizz"
@@ -8,14 +11,25 @@ const(
 	FizzBuzzStr = "FizzBuzz"
 )
 func FizzBuzz(s int) string {
-	if s%3 == 0 && s%5 == 0{
+	if isRelatedTo(s,3) && isRelatedTo(s,5){
 		return FizzBuzzStr
 	}
-	if s%3 == 0{
+	if isRelatedTo(s,3){
 		return Fizz
 	}
-	if s%5 == 0{
+	if isRelatedTo(s,5){
 		return Buzz
 	}
 	return fmt.Sprintf("%d",s)
+}
+
+
+func isRelatedTo(num , relate int) bool{
+	if num%relate == 0{
+		return true
+	}
+	if strings.Contains(fmt.Sprintf("%d",num),fmt.Sprintf("%d",relate)){
+		return true
+	}
+	return false
 }
