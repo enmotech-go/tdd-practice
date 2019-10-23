@@ -16,5 +16,9 @@ func TestFizzBuzz(t *testing.T)  {
 		fb := FizzBuzz{3}
 		assert.Equal(t,"Fizz",fb.Number())
 	})
+	t.Run("test_should_show_buzz", func(t *testing.T) {
+		fb:=FizzBuzz{5}
+		assert.Equal(t,"Buzz",fb.Number())
+	})
 
 }
