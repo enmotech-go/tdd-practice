@@ -1,6 +1,9 @@
 package class11
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 type fizzBuzz struct {
 	Input int
@@ -13,13 +16,13 @@ const (
 )
 
 func (f *fizzBuzz) Number() string {
-	if f.Input%5 == 0 && f.Input%3 == 0 {
+	if isRelated(f.Input, 3) && isRelated(f.Input, 5) {
 		return FizzBuzzStr
 	}
-	if f.Input%3 == 0 {
+	if isRelated(f.Input, 3) {
 		return Fizz
 	}
-	if f.Input%5 == 0 {
+	if isRelated(f.Input, 5) {
 		return Buzz
 	}
 	return strconv.Itoa(f.Input)
@@ -30,4 +33,9 @@ func FizzBuzz(num int) *fizzBuzz {
 	buzz := new(fizzBuzz)
 	buzz.Input = num
 	return buzz
+}
+
+func isRelated(input, num int) bool {
+	return input%num == 0 || strings.Contains(strconv.Itoa(input), strconv.Itoa(num))
+
 }

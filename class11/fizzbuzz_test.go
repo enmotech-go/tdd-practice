@@ -29,4 +29,10 @@ func TestFizzBuzz(t *testing.T) {
 		assert.Equal(t, "FizzBuzz", got.Number())
 
 	})
+
+	t.Run("test should show row 3  number show Fizz", func(t *testing.T) {
+		got := FizzBuzz(13)
+		assert.Equal(t, "Fizz", got.Number())
+
+	})
 }
