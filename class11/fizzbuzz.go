@@ -1,15 +1,18 @@
 package class11
 
+import "strconv"
+
 type fizzBuzz struct {
-	Input string
+	Input int
 }
 
 func (f *fizzBuzz) Number() string {
+	return strconv.Itoa(f.Input)
 
-	return "1"
 }
 
 func FizzBuzz(num int) *fizzBuzz {
 	buzz := new(fizzBuzz)
+	buzz.Input = num
 	return buzz
 }
