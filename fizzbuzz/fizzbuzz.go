@@ -1,24 +1,27 @@
 package fizzbuzz
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type FizzBuzz struct {
 	input int
 }
 
 func (fb FizzBuzz) Number() string {
-	if isDivisibleBy(fb.input, 3) && isDivisibleBy(fb.input, 5) {
+	if isRelatedTo(fb.input, 3) && isRelatedTo(fb.input, 5) {
 		return "FizzBuzz"
 	}
-	if isDivisibleBy(fb.input, 3) {
+	if isRelatedTo(fb.input, 3) {
 		return "Fizz"
 	}
-	if isDivisibleBy(fb.input, 5) {
+	if isRelatedTo(fb.input, 5) {
 		return "Buzz"
 	}
 	return fmt.Sprintf("%d", fb.input)
 }
 
-func isDivisibleBy(input, n int) bool {
-	return input%n == 0
+func isRelatedTo(input, n int) bool {
+	return input%n == 0 || strings.Contains(fmt.Sprintf("%d", input), fmt.Sprintf("%d", n))
 }
