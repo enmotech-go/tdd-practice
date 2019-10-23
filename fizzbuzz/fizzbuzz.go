@@ -1,10 +1,15 @@
 package fizzbuzz
 
+import "fmt"
+
 type FizzBuzz struct {
-	input string
+	input int
 }
 
 func (fb FizzBuzz)Number()  string {
-	return fb.input
+	if fb.input%3==0{
+		return "Fizz"
+	}
+	return fmt.Sprintf("%d",fb.input)
 }
 
