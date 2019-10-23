@@ -6,15 +6,21 @@ type fizzBuzz struct {
 	Input int
 }
 
+const (
+	Fizz        = "Fizz"
+	Buzz        = "Buzz"
+	FizzBuzzStr = "FizzBuzz"
+)
+
 func (f *fizzBuzz) Number() string {
 	if f.Input%5 == 0 && f.Input%3 == 0 {
-		return "FizzBuzz"
+		return FizzBuzzStr
 	}
 	if f.Input%3 == 0 {
-		return "Fizz"
+		return Fizz
 	}
 	if f.Input%5 == 0 {
-		return "Buzz"
+		return Buzz
 	}
 	return strconv.Itoa(f.Input)
 
