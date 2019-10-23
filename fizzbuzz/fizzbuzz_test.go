@@ -13,6 +13,7 @@ func Test_canBeDivisibleByThree(t *testing.T) {
 		want bool
 	}{
 		// TODO: Add test cases.
+		{name: "three can be divisible by zero", args: args{set: 0, input: 3}, want: false},
 		{name: "three can be divisible by three", args: args{set: 3, input: 3}, want: true},
 		{name: "four can not be divisible by five", args: args{set: 5, input: 4}, want: false},
 	}
