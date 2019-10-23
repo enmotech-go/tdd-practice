@@ -1,21 +1,27 @@
 package fizzbuzz
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type FizzBuzz struct {
 	input int
 }
 
-func (fb FizzBuzz)Number()  string {
-	if fb.input%3==0&&fb.input%5==0{
+func (fb FizzBuzz) Number(num int) string {
+	if idRelatedNum(num, 3) && idRelatedNum(num , 5)  {
 		return "FizzBuzz"
 	}
-	if fb.input%3==0{
+	if idRelatedNum(num, 3)  {
 		return "Fizz"
 	}
-	if fb.input%5==0{
+	if idRelatedNum(num , 5)  {
 		return "Buzz"
 	}
-	return fmt.Sprintf("%d",fb.input)
+	return fmt.Sprintf("%d", fb.input)
 }
-
+func idRelatedNum(raw , needNum int) bool {
+	return raw % needNum == 0 || strings.Contains(strconv.Itoa(raw), strconv.Itoa(needNum))
+}
