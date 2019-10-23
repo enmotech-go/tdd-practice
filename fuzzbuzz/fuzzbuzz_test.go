@@ -24,8 +24,8 @@ func TestFuzzBuzz(t *testing.T) {
 	})
 
 	t.Run("saying fizz", func(t *testing.T) {
-		result := FizzBuzz(13)
-		got := Fizz
+		result := FizzBuzz(51)
+		got := FizzBuzzStr
 		assertCorrectMessage(t,result,got)
 	})
 
