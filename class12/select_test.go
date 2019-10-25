@@ -1,7 +1,6 @@
 package class12
 
 import (
-	"github.com/magiconair/properties/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,13 +11,12 @@ func TestRacer(t *testing.T) {
 
 	slowServer := makeDelayedServer(20 * time.Millisecond)
 	fastServer := makeDelayedServer(0 * time.Millisecond)
-	slowURL := slowServer.URL
-	fastURL := fastServer.URL
-	want := fastURL
-	got := Racer(fastURL, slowURL)
-	assert.Equal(t, got, want)
-	slowServer.Close()
-	fastServer.Close()
+	defer slowServer.Close()
+	defer fastServer.Close()
+	_, err := Racer(slowServer.URL, fastServer.URL)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func makeDelayedServer(delay time.Duration) *httptest.Server {
