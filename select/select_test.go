@@ -13,9 +13,12 @@ func TestRacer(t *testing.T) {
 		w.WriteHeader(http.StatusOK)
 	}))
 
+	defer slowServer.Close()
+
 	fastServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
+	defer fastServer.Close()
 
 	slowUrl := slowServer.URL
 	fastUrl := fastServer.URL
