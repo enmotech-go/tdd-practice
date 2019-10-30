@@ -9,18 +9,24 @@ import (
 )
 
 func TestRear(t *testing.T) {
-	slow := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(20 * time.Millisecond)
-		w.WriteHeader(http.StatusOK)
-	}))
+	slow := makeMockHttpServer(20 * time.Millisecond)
 
-	fast := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
+	fast := makeMockHttpServer(20 * time.Millisecond)
+
+	defer slow.Close()
+	defer fast.Close()
 
 	slowURL := slow.URL
 	fastURL := fast.URL
 	want := fastURL
 	got := Racer(slowURL, fastURL)
 	assert.Equal(t, got, want)
+}
+
+func makeMockHttpServer(duration time.Duration) *httptest.Server {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(duration)
+		w.WriteHeader(http.StatusOK)
+	}))
+	return server
 }
