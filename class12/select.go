@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"time"
@@ -8,11 +9,12 @@ import (
 
 const DefaultTimeout = 10 * time.Second
 
-func Racer(a, b string) (string, error) {
-	return ConfigurableRacer(a, b, DefaultTimeout)
+func Racer(ctx context.Context, a, b string) (string, error) {
+	return ConfigurableRacer(ctx, a, b, DefaultTimeout)
 }
 
-func ConfigurableRacer(a, b string, delay time.Duration) (string, error) {
+func ConfigurableRacer(ctx context.Context, a, b string, delay time.Duration) (string, error) {
+
 	select {
 	case <-ping(a):
 		return a, nil
@@ -20,12 +22,14 @@ func ConfigurableRacer(a, b string, delay time.Duration) (string, error) {
 		return b, nil
 	case <-time.After(delay):
 		return "", errors.New("timeout")
+	case <-ctx.Done():
+		return "", errors.New("cancel")
 	}
 
 }
 
 func ping(url string) chan struct{} {
-	result := make(chan struct{}, 1)
+	result := make(chan struct{})
 	go func() {
 		http.Get(url)
 		result <- struct{}{}
