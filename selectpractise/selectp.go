@@ -2,20 +2,23 @@ package selectpractise
 
 import (
 	"net/http"
-"time"
-	)
+)
 
 func Racer(a, b string) string {
-	aDuration := measureResponseTime(a)
-	bDuration := measureResponseTime(b)
-	if aDuration < bDuration {
+	select {
+	case <- ping(a):
 		return a
+	case <- ping(b):
+		return b
 	}
-	return b
 }
 
-func measureResponseTime(url string) time.Duration {
-	startA:= time.Now()
-	http.Get(url)
-	return time.Since(startA)
+func ping(url string) chan bool {
+	ch := make(chan bool)
+	go func() {
+		http.Get(url)
+		ch <- true
+	}()
+	return ch
 }
+
