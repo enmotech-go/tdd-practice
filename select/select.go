@@ -1,23 +1,27 @@
 package _select
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 )
 
-func Racer(urlA, urlB string) string {
-	durationA := measureResponseTime(urlA)
-	durationB := measureResponseTime(urlB)
-
-	if durationA < durationB {
-		return urlA
-	} else {
-		return urlB
+func Racer(urlA, urlB string) (string, error) {
+	select {
+	case <-ping(urlA):
+		return urlA, nil
+	case <-ping(urlB):
+		return urlB, nil
+	case <-time.After(time.Second * 10):
+		return "", fmt.Errorf("response time exceed 10s")
 	}
 }
 
-func measureResponseTime(url string) time.Duration {
-	start := time.Now()
-	http.Get(url)
-	return time.Since(start)
+func ping(url string) chan bool {
+	ch := make(chan bool)
+	go func() {
+		http.Get(url)
+		ch <- true
+	}()
+	return ch
 }
