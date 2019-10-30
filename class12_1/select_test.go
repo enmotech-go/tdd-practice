@@ -10,16 +10,16 @@ import (
 
 func TestRear(t *testing.T) {
 	slow := makeMockHttpServer(20 * time.Millisecond)
-
 	fast := makeMockHttpServer(0 * time.Millisecond)
-
 	defer slow.Close()
 	defer fast.Close()
-
 	slowURL := slow.URL
 	fastURL := fast.URL
 	want := fastURL
-	got := Racer(slowURL, fastURL)
+	got, err := Racer(slowURL, fastURL)
+	if err != nil {
+		t.Errorf("time out")
+	}
 	assert.Equal(t, got, want)
 }
 
