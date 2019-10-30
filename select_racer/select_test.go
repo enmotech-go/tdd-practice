@@ -10,13 +10,16 @@ import (
 )
 
 func TestRacer(t *testing.T) {
-	slowServer := makeDelayedServer(20 * time.Millisecond)
-	fastServer := makeDelayedServer(0 * time.Millisecond)
+	t.Run("returns_error_if_timeout", func(t *testing.T) {
+		slowServer := makeDelayedServer(11 * time.Second)
+		fastServer := makeDelayedServer(10 * time.Second)
 
-	defer slowServer.Close()
-	defer fastServer.Close()
+		defer slowServer.Close()
+		defer fastServer.Close()
 
-	assert.Equal(t, fastServer.URL, Racer(slowServer.URL, fastServer.URL))
+		_, err := Racer(slowServer.URL, fastServer.URL)
+		assert.Error(t, err)
+	})
 }
 
 func makeDelayedServer(delay time.Duration) *httptest.Server {
