@@ -6,13 +6,20 @@ import (
 	"time"
 )
 
+const DefaultTimeout = 10 * time.Second
+
 func Racer(a, b string) (string, error) {
+
+	return ConfigurableRacer(a, b, DefaultTimeout)
+}
+
+func ConfigurableRacer(a, b string, delay time.Duration) (string, error) {
 	select {
 	case <-ping(a):
 		return a, nil
 	case <-ping(b):
 		return b, nil
-	case <-time.After(10 * time.Second):
+	case <-time.After(delay):
 		return "", fmt.Errorf("time out")
 	}
 
