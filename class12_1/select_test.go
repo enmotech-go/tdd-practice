@@ -1,6 +1,7 @@
 package class12_1
 
 import (
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -8,16 +9,44 @@ import (
 )
 
 func TestRear(t *testing.T) {
-	slow := makeMockHttpServer(11 * time.Second)
-	fast := makeMockHttpServer(12 * time.Second)
-	defer slow.Close()
-	defer fast.Close()
-	slowURL := slow.URL
-	fastURL := fast.URL
-	_, err := Racer(slowURL, fastURL)
-	if err != nil {
-		t.Log("time out")
-	}
+
+	t.Run("success ", func(t *testing.T) {
+		slow := makeMockHttpServer(20 * time.Millisecond)
+		fast := makeMockHttpServer(0)
+		defer slow.Close()
+		defer fast.Close()
+		slowURL := slow.URL
+		fastURL := fast.URL
+		want := fastURL
+		got, err := Racer(slowURL, fastURL)
+		if err != nil {
+			t.Log("time out")
+		}
+		assert.Equal(t, got, want)
+	})
+
+	t.Run("no timeout ", func(t *testing.T) {
+		slow := makeMockHttpServer(20 * time.Millisecond)
+		fast := makeMockHttpServer(0)
+		defer slow.Close()
+		defer fast.Close()
+		slowURL := slow.URL
+		fastURL := fast.URL
+		_, err := ConfigurableRacer(slowURL, fastURL, 1*time.Second)
+		assert.NoError(t, err)
+	})
+
+	t.Run("timeout ", func(t *testing.T) {
+		slow := makeMockHttpServer(11 * time.Second)
+		fast := makeMockHttpServer(12 * time.Second)
+		defer slow.Close()
+		defer fast.Close()
+		slowURL := slow.URL
+		fastURL := fast.URL
+		_, err := ConfigurableRacer(slowURL, fastURL, 1*time.Second)
+		assert.Error(t, err)
+	})
+
 }
 
 func makeMockHttpServer(duration time.Duration) *httptest.Server {
