@@ -2,14 +2,25 @@ package selectpractise
 
 import (
 	"net/http"
+	"errors"
+	"time"
 )
 
-func Racer(a, b string) string {
+var senTimeout = 10 * time.Second
+
+func Racer(a, b string) (string, error){
+	return ConfableRacer(a, b, senTimeout)
+}
+
+
+func ConfableRacer(a, b string, duation time.Duration) (string, error) {
 	select {
 	case <- ping(a):
-		return a
+		return a, nil
 	case <- ping(b):
-		return b
+		return b, nil
+	case <- time.After(duation):
+		return "", errors.New("more than 10 ms")
 	}
 }
 
