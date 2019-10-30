@@ -15,21 +15,34 @@ func makeDelayedServer(delay time.Duration) *httptest.Server {
 }
 
 func TestRacer(t *testing.T) {
+	t.Run("quick test", func(t *testing.T) {
+		ServerA := makeDelayedServer(20 * time.Millisecond)
+		ServerB := makeDelayedServer(0 * time.Millisecond)
 
-	slowServer := makeDelayedServer(20 * time.Millisecond)
-	fastServer := makeDelayedServer(0 * time.Millisecond)
+		defer ServerA.Close()
+		defer ServerB.Close()
 
-	defer slowServer.Close()
-	defer fastServer.Close()
+		A := ServerA.URL
+		B := ServerB.URL
 
-	A := slowServer.URL
-	B := fastServer.URL
+		want := B
+		got, _ := Racer(A, B)
 
-	want := B
-	got := Racer(A, B)
+		if got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	})
 
-	if got != want {
-		t.Errorf("got %s, want %s", got, want)
-	}
+	t.Run("slow test", func(t *testing.T) {
+		ServerA := makeDelayedServer(30 * time.Millisecond)
+
+		defer ServerA.Close()
+
+		_, err := ConfigurableRacer(ServerA.URL, ServerA.URL, 20*time.Millisecond)
+
+		if err == nil {
+			t.Errorf("expected an error but didn't get one")
+		}
+	})
 
 }
