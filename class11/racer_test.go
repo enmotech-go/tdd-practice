@@ -14,11 +14,8 @@ func TestRacer(t *testing.T) {
 	defer slowServer.Close()
 	defer fastServer.Close()
 
-	slowURL := slowServer.URL
-	fastURL := fastServer.URL
-
-	want := fastURL
-	got := Racer(slowURL, fastURL)
+	want := fastServer.URL
+	got, _ := Racer(slowServer.URL, fastServer.URL)
 
 	if got != want {
 		t.Errorf("got '%s', want '%s'", got, want)
