@@ -11,7 +11,7 @@ import (
 func TestRear(t *testing.T) {
 	slow := makeMockHttpServer(20 * time.Millisecond)
 
-	fast := makeMockHttpServer(20 * time.Millisecond)
+	fast := makeMockHttpServer(0 * time.Millisecond)
 
 	defer slow.Close()
 	defer fast.Close()
