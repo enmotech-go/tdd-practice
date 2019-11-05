@@ -37,14 +37,11 @@ func TestRear(t *testing.T) {
 	})
 
 	t.Run("timeout ", func(t *testing.T) {
-		slow := makeMockHttpServer(11 * time.Second)
-		fast := makeMockHttpServer(12 * time.Second)
-		defer slow.Close()
-		defer fast.Close()
-		slowURL := slow.URL
+		fast := makeMockHttpServer(1000 * time.Millisecond)
 		fastURL := fast.URL
-		_, err := ConfigurableRacer(slowURL, fastURL, 1*time.Second)
+		_, err := ConfigurableRacer(fastURL, fastURL, 10*time.Millisecond)
 		assert.Error(t, err)
+		fast.Close()
 	})
 
 }
