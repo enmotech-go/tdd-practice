@@ -24,14 +24,15 @@ func TestWalk(t *testing.T) {
 	}{
 		{
 			"Struct with one string field",
-			Person{
-				Name: "Chris",
-				Profile: Profile{
+			[]Profile{
+				Profile{
 					33,
 					"London",
+				}, {
+					34, "Reykjavík",
 				},
 			},
-			[]string{"Chris", "London"},
+			[]string{"London", "Reykjavík"},
 		},
 	}
 
