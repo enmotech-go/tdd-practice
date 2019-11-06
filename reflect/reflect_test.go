@@ -112,6 +112,7 @@ func assertContains(t *testing.T, haystack []string, needle string) {
 	for _, x := range haystack {
 		if x == needle {
 			contains = true
+			break
 		}
 	}
 	if !contains {
