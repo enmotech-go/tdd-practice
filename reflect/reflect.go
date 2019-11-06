@@ -8,6 +8,8 @@ func walk(x interface{}, fn func(string)) {
 		field := val.Field(i)
 		if field.Kind() == reflect.String {
 			fn(field.String())
+		} else if field.Kind() == reflect.Struct {
+			walk(field.Interface(), fn)
 		}
 	}
 }
