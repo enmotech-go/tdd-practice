@@ -3,7 +3,10 @@ package walk
 import "reflect"
 
 func walk(x interface{}, fn func(input string)) {
-	value := reflect.ValueOf(x)
-	field := value.Field(0)
-	fn(field.String())
+	val := reflect.ValueOf(x)
+
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+		fn(field.String())
+	}
 }
