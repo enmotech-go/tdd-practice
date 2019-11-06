@@ -7,6 +7,9 @@ func walk(x interface{}, fn func(string)) {
 
 	var numOfFields int
 	var getField func(int) reflect.Value
+	walkValue := func(val reflect.Value) {
+		walk(val.Interface(), fn)
+	}
 
 	switch val.Kind() {
 	case reflect.Slice, reflect.Array:
@@ -19,12 +22,12 @@ func walk(x interface{}, fn func(string)) {
 		fn(val.String())
 	case reflect.Map:
 		for _, key := range val.MapKeys() {
-			walk(val.MapIndex(key).Interface(), fn)
+			walkValue(val.MapIndex(key))
 		}
 	}
 
 	for i := 0; i < numOfFields; i++ {
-		walk(getField(i).Interface(), fn)
+		walkValue(getField(i))
 	}
 }
 
