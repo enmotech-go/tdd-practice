@@ -2,8 +2,6 @@ package reflect
 
 import (
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 type Person struct {
@@ -24,12 +22,12 @@ func TestWalk(t *testing.T) {
 	}{
 		{
 			"Struct with one string field",
-			[2]Profile{
-				{33, "London"},
-				{34, "Reykjavík"},
+			map[string]string{
+				"Foo": "Bar",
+				"Baz": "Boz",
 			},
 
-			[]string{"London", "Reykjavík"},
+			[]string{"Bar", "Boz"},
 		},
 	}
 
@@ -39,7 +37,20 @@ func TestWalk(t *testing.T) {
 			Walk(test.Input, func(input string) {
 				got = append(got, input)
 			})
-			assert.Equal(t, test.ExpectedCalls, got)
+			assertContains(t, got, "Bar")
+			assertContains(t, got, "Boz")
 		})
+	}
+}
+
+func assertContains(t *testing.T, haystack []string, needle string) {
+	contains := false
+	for _, x := range haystack {
+		if x == needle {
+			contains = true
+		}
+	}
+	if !contains {
+		t.Errorf("expected %+v to contain '%s' but it didnt", haystack, needle)
 	}
 }
