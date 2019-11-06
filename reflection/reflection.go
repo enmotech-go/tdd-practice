@@ -9,5 +9,9 @@ func walk(x interface{}, fn func(input string)) {
 		if filed.Kind() == reflect.String {
 			fn(filed.String())
 		}
+
+		if filed.Kind() == reflect.Struct {
+			walk(filed.Interface(), fn)
+		}
 	}
 }
