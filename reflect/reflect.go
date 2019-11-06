@@ -9,7 +9,7 @@ func walk(x interface{}, fn func(string)) {
 	var getField func(int) reflect.Value
 
 	switch val.Kind() {
-	case reflect.Slice:
+	case reflect.Slice, reflect.Array:
 		numOfFields = val.Len()
 		getField = val.Index
 	case reflect.Struct:
