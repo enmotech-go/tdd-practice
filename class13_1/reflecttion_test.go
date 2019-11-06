@@ -21,7 +21,7 @@ func TestWalk(t *testing.T) {
 		ExpectedCalls []string
 	}{
 		{"Struct with one string field",
-			Person{"Chris", Profile{
+			&Person{"Chris", Profile{
 				Age:  33,
 				City: "London",
 			}},
