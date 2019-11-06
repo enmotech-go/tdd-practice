@@ -6,6 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type Person struct {
+	Name    string
+	Profile Profile
+}
+
+type Profile struct {
+	Age  int
+	City string
+}
+
 func TestWalk(t *testing.T) {
 	cases := []struct {
 		Name          string
@@ -14,11 +24,11 @@ func TestWalk(t *testing.T) {
 	}{
 		{
 			"Struct with one string field",
-			struct {
-				Name string
-				Age  int
-			}{"Chris", 18},
-			[]string{"Chris"},
+			&Person{
+				Name:    "Chris",
+				Profile: Profile{Age: 33, City: "London"},
+			},
+			[]string{"Chris", "London"},
 		},
 	}
 
