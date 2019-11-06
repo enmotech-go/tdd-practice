@@ -24,7 +24,7 @@ func TestWalk(t *testing.T) {
 	}{
 		{
 			"Struct with one string field",
-			[]Profile{
+			[2]Profile{
 				{33, "London"},
 				{34, "Reykjavík"},
 			},
