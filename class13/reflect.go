@@ -4,6 +4,11 @@ import "reflect"
 
 func Walk(in interface{}, fn func(input string)) {
 	val := reflect.ValueOf(in)
-	fieldOne := val.Field(0)
-	fn(fieldOne.String())
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+		if field.Kind() == reflect.String {
+			fn(field.String())
+		}
+
+	}
 }
