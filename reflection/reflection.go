@@ -6,11 +6,11 @@ func walk(x interface{}, fn func(input string)) {
 	val := reflect.ValueOf(x)
 	for i := 0; i < val.NumField(); i++ {
 		filed := val.Field(i)
-		if filed.Kind() == reflect.String {
-			fn(filed.String())
-		}
 
-		if filed.Kind() == reflect.Struct {
+		switch filed.Kind() {
+		case reflect.String:
+			fn(filed.String())
+		case reflect.Struct:
 			walk(filed.Interface(), fn)
 		}
 	}
