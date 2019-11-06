@@ -27,6 +27,14 @@ func TestWalk(t *testing.T) {
 			}},
 			[]string{"Chris", "London"},
 		},
+		{"Struct with one string field",
+			[]Profile{
+				{
+					Age:  33,
+					City: "London",
+				}, {Age: 34, City: "Reykjavík"}},
+			[]string{"London", "Reykjavík"},
+		},
 	}
 
 	for _, tt := range cases {
