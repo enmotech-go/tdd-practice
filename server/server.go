@@ -25,18 +25,24 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
-type InMemoryPlayerStore struct{}
+type InMemoryPlayerStore struct {
+	store map[string]int
+}
+
+func NewInMemoryPlayerStore() *InMemoryPlayerStore {
+	return &InMemoryPlayerStore{map[string]int{}}
+}
 
 func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return 123
+	return i.store[name]
 }
 
 func (i *InMemoryPlayerStore) RecordWin(name string) {
-
+	i.store[name]++
 }
 
 func main() {
-	server := &PlayerServer{&InMemoryPlayerStore{}}
+	server := &PlayerServer{NewInMemoryPlayerStore()}
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("error: %v", err)
 	}
