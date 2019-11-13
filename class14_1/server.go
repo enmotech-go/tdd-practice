@@ -5,20 +5,8 @@ import (
 	"net/http"
 )
 
-func GetPlayerScore(player string) string {
-	if player == "Pepper" {
-
-		return "20"
-	}
-	if player == "Floyd" {
-
-		return "10"
-	}
-	return ""
-}
-
 func main() {
-	var server = &PlayerServer{}
+	var server = &PlayerServer{store: &StubPlayerStore{score: map[string]int{}}}
 	handlerFunc := http.HandlerFunc(server.ServerHTTP)
 	if err := http.ListenAndServe(":5000", handlerFunc); err != nil {
 		return
