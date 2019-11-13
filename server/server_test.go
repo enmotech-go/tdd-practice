@@ -20,4 +20,15 @@ func TestServer(t *testing.T) {
 
 		assert.Equal(t, want, got)
 	})
+	t.Run("test_return_floyd_score", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/players/Floyd", nil)
+		response := httptest.NewRecorder()
+
+		PlayerServer(response, request)
+
+		got := response.Body.String()
+		want := "10"
+
+		assert.Equal(t, want, got)
+	})
 }
