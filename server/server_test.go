@@ -53,11 +53,13 @@ func TestStoreWins(t *testing.T) {
 	server := &PlayerServer{&store}
 
 	t.Run("test_records_wins_when_post", func(t *testing.T) {
+		player := "Pepper"
 		request := newPostWinRequest("Pepper")
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, request)
 		assert.Equal(t, http.StatusAccepted, response.Code)
 		assert.Len(t, store.winCalls, 1)
+		assert.Equal(t, player, store.winCalls[0])
 	})
 }
 
