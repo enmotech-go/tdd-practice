@@ -6,15 +6,22 @@ import (
 	"net/http"
 )
 
-type InMemoryPlayerStore struct{}
+type InMemoryPlayerStore struct {
+	store map[string]int
+}
+
+func NewInMemoryPlayerStore() *InMemoryPlayerStore {
+	return &InMemoryPlayerStore{map[string]int{}}
+}
 
 func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return 123
+	return i.store[name]
 }
 func (i *InMemoryPlayerStore) RecordWin(name string) {
+	i.store[name]++
 }
 func main() {
-	server := &PlayerServer{&InMemoryPlayerStore{}}
+	server := &PlayerServer{NewInMemoryPlayerStore()}
 
 	if err := http.ListenAndServe(":15000", server); err != nil {
 		log.Fatal("could not listen on port 5000 ", err)
@@ -45,18 +52,18 @@ func (s *StubPlayerStore) RecordWin(name string) {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+	player := r.URL.Path[len("/player/"):]
 	switch r.Method {
 	case http.MethodPost:
-		p.processWin(w)
+		p.processWin(w, player)
 	case http.MethodGet:
-		p.showScore(r, w)
+		p.showScore(player, w)
 	}
 
 }
 
-func (p *PlayerServer) showScore(r *http.Request, w http.ResponseWriter) {
-	player := r.URL.Path[len("/player/"):]
+func (p *PlayerServer) showScore(player string, w http.ResponseWriter) {
+
 	score := p.store.GetPlayerScore(player)
 	if score == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -64,8 +71,8 @@ func (p *PlayerServer) showScore(r *http.Request, w http.ResponseWriter) {
 	fmt.Fprint(w, score)
 }
 
-func (p *PlayerServer) processWin(w http.ResponseWriter) {
-	p.store.RecordWin("Bob")
+func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
+	p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 
 }
