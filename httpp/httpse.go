@@ -7,7 +7,13 @@ import (
 )
 
 func PlayerServer(recorder http.ResponseWriter, request *http.Request) {
-	fmt.Fprintf(recorder, "20")
+	player := request.URL.Path[len("/player/"):]
+	if player == "Pepper" {
+		fmt.Fprintf(recorder, "20")
+	}
+	if player == "floyd" {
+		fmt.Fprintf(recorder, "10")
+	}
 }
 
 func main() {
