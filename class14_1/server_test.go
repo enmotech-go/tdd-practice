@@ -18,19 +18,33 @@ func TestServer(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		server.ServeHTTP(recorder, request)
 		assertResponseBody(recorder.Body.String(), "20", t)
-		got := recorder.Body.String()
-		want := "20"
-		if got != want {
-			t.Errorf("got  '%s'  want '%s' ", got, want)
-		}
+		newGetRequestStart(t, recorder.Code, http.StatusOK)
 	})
+
 	t.Run("return Floyd Score", func(t *testing.T) {
 		request := newGetScoreRequest("Floyd")
 		recorder := httptest.NewRecorder()
 		server.ServeHTTP(recorder, request)
 		assertResponseBody(recorder.Body.String(), "10", t)
+		newGetRequestStart(t, recorder.Code, http.StatusOK)
 
 	})
+
+	t.Run("returns 404 on missing players", func(t *testing.T) {
+		request := newGetScoreRequest("Apollo")
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		newGetRequestStart(t, response.Code, http.StatusNotFound)
+	})
+}
+
+func newGetRequestStart(t *testing.T, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("did not get correct status, got %d, want %d", got, want)
+	}
+
 }
 
 func newGetScoreRequest(name string) *http.Request {
