@@ -16,9 +16,12 @@ type InMemoryPlayerStore struct {
 }
 
 func (i *InMemoryPlayerStore) RecordWin(name string) {
-	_, ok := i.store[name]
+	score, ok := i.store[name]
 	if ok {
-		i.store[name]++
+		score++
+		i.store[name] = score
+	} else {
+		i.store[name] = 1
 	}
 
 }
