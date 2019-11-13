@@ -38,6 +38,11 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		w.WriteHeader(http.StatusAccepted)
+		return
+	}
+
 	player := r.URL.Path[len("/player/"):]
 	score := p.store.GetPlayerScore(player)
 	if score == 0 {
