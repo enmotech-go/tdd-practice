@@ -6,24 +6,44 @@ import (
 	"net/http"
 )
 
-func PlayerServer(w http.ResponseWriter, r *http.Request) {
+type StubPlayerStore struct {
+	scores map[string]int
+}
 
+func (s *StubPlayerStore) GetPlayerScore(name string) int {
+	score := s.scores[name]
+	return score
+}
+
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+}
+
+type PlayerServer struct {
+	store PlayerStore
+}
+
+func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/players/"):]
+	fmt.Fprint(w, p.store.GetPlayerScore(player))
+}
 
-	if player == "Pepper" {
-		fmt.Fprint(w, "20")
-		return
+func GetPlayerScore(name string) string {
+	if name == "Pepper" {
+		return "20"
 	}
 
-	if player == "Floyd" {
-		fmt.Fprint(w, "10")
-		return
+	if name == "Floyd" {
+		return "10"
 	}
+
+	return ""
 }
 
 func main() {
-	handler := http.HandlerFunc(PlayerServer)
-	if err := http.ListenAndServe(":5000", handler); err != nil {
+	server := &PlayerServer{}
+
+	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen on port 5000 %v", err)
 	}
 }
