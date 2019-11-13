@@ -1,4 +1,4 @@
-package class13
+package main
 
 import (
 	"fmt"
@@ -59,7 +59,7 @@ func TestStoreWins(t *testing.T) {
 	player := "Pepper"
 
 	t.Run("Post", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodPost, "/players/Pepper", nil)
+		request := newPostWinRequest(player)
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
@@ -74,6 +74,22 @@ func TestStoreWins(t *testing.T) {
 			t.FailNow()
 		}
 	})
+}
+
+func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+	store := NewInMemoryPlayerStore()
+	server := PlayerServer{store}
+	player := "Pepper"
+
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+
+	response := httptest.NewRecorder()
+	server.ServeHTTP(response, newGetScoreRequest(player))
+	assertStatus(t, response.Code, http.StatusOK)
+
+	assertResponseBody(t, response.Body.String(), "3")
 }
 
 func assertStatus(t *testing.T, got, want int) {
