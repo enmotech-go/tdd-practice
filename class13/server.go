@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	handler := &PlayerServer{&InMemoryPlayerStore{}}
+	handler := &PlayerServer{&InMemoryPlayerStore{
+		map[string]int{},
+	}}
 	if err := http.ListenAndServe(":5000", handler); err != nil {
 		return
 	}
@@ -18,13 +20,15 @@ type PlayerStore interface {
 }
 
 type InMemoryPlayerStore struct {
+	store map[string]int
 }
 
 func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return 123
+	return i.store[name]
 }
 
 func (i *InMemoryPlayerStore) RecordWin(name string) {
+	i.store[name]++
 }
 
 type PlayerServer struct {

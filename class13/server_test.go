@@ -81,8 +81,31 @@ func TestStoreWins(t *testing.T) {
 	})
 }
 
+func TestUnit(t *testing.T) {
+	store := InMemoryPlayerStore{
+		map[string]int{},
+	}
+	server := PlayerServer{&store}
+	player := "Pepper"
+
+	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
+
+	response := httptest.NewRecorder()
+	server.ServeHTTP(response, newGetScoreRequest(player))
+
+	assertResponseStatus(t, response.Code, http.StatusOK)
+	assertResponseBody(t, response.Body.String(), "3")
+}
+
 func newGetScoreRequest(name string) *http.Request {
 	request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/players/%s", name), nil)
+	return request
+}
+
+func newPostScoreRequest(name string) *http.Request {
+	request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
 	return request
 }
 
