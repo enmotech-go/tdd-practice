@@ -7,6 +7,15 @@ import (
 	"testing"
 )
 
+type StubPlayerStore struct {
+	scores map[string]int
+}
+
+func (s *StubPlayerStore) GetPlayerScore(name string) int {
+	score := s.scores[name]
+	return score
+}
+
 func Test(t *testing.T) {
 	store := StubPlayerStore{map[string]int{
 		"Pepper": 20,
@@ -20,6 +29,7 @@ func Test(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
+		assertResponseStatus(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "20")
 	})
 	t.Run("returns Floyd's score", func(t *testing.T) {
@@ -28,7 +38,16 @@ func Test(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
+		assertResponseStatus(t, response.Code, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "10")
+	})
+	t.Run("returns 404 on missing players", func(t *testing.T) {
+		request := newGetScoreRequest("Apollo")
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+
+		assertResponseStatus(t, response.Code, http.StatusNotFound)
 	})
 }
 
@@ -41,5 +60,12 @@ func assertResponseBody(t *testing.T, got, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got '%s' want '%s'", got, want)
+	}
+}
+
+func assertResponseStatus(t *testing.T, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("not correct status, got %d want %d", got, want)
 	}
 }

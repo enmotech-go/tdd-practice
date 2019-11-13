@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	handler := &PlayerServer{&StubPlayerStore{scores: map[string]int{}}}
+	handler := &PlayerServer{&InMemoryPlayerStore{}}
 	if err := http.ListenAndServe(":5000", handler); err != nil {
 		return
 	}
@@ -16,13 +16,11 @@ type PlayerStore interface {
 	GetPlayerScore(name string) int
 }
 
-type StubPlayerStore struct {
-	scores map[string]int
+type InMemoryPlayerStore struct {
 }
 
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
-	return score
+func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
+	return 123
 }
 
 type PlayerServer struct {
@@ -32,5 +30,11 @@ type PlayerServer struct {
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/players/"):]
 
-	fmt.Fprint(w, p.store.GetPlayerScore(player))
+	score := p.store.GetPlayerScore(player)
+
+	if score == 0 {
+		w.WriteHeader(http.StatusNotFound)
+	}
+
+	fmt.Fprint(w, score)
 }
