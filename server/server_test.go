@@ -24,6 +24,7 @@ func TestServer(t *testing.T) {
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
+		assert.Equal(t, http.StatusOK, response.Code)
 		assert.Equal(t, "20", response.Body.String())
 	})
 	t.Run("test_return_floyd_score", func(t *testing.T) {
@@ -31,7 +32,15 @@ func TestServer(t *testing.T) {
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
+		assert.Equal(t, http.StatusOK, response.Code)
 		assert.Equal(t, "10", response.Body.String())
+	})
+	t.Run("test_404_on_missing_players", func(t *testing.T) {
+		request := newGetScoreRequest("Apollo")
+		response := httptest.NewRecorder()
+
+		server.ServeHTTP(response, request)
+		assert.Equal(t, http.StatusNotFound, response.Code)
 	})
 }
 
