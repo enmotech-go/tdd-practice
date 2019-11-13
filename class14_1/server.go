@@ -2,13 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
+type InMemoryPlayerStore struct{}
+
+func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
+	return 123
+}
+
 func main() {
-	var server = &PlayerServer{store: &StubPlayerStore{score: map[string]int{}}}
-	handlerFunc := http.HandlerFunc(server.ServerHTTP)
-	if err := http.ListenAndServe(":5000", handlerFunc); err != nil {
+	server := &PlayerServer{&InMemoryPlayerStore{}}
+
+	if err := http.ListenAndServe(":15000", server); err != nil {
+		log.Fatal("could not listen on port 5000 ", err)
 		return
 	}
 }
@@ -29,7 +37,7 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 	return s.score[name]
 }
 
-func (p *PlayerServer) ServerHTTP(w http.ResponseWriter, r *http.Request) {
+func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/player/"):]
 	fmt.Fprint(w, p.store.GetPlayerScore(player))
 }

@@ -16,7 +16,7 @@ func TestServer(t *testing.T) {
 	t.Run("return Pepper Score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
 		recorder := httptest.NewRecorder()
-		server.ServerHTTP(recorder, request)
+		server.ServeHTTP(recorder, request)
 		assertResponseBody(recorder.Body.String(), "20", t)
 		got := recorder.Body.String()
 		want := "20"
@@ -27,7 +27,7 @@ func TestServer(t *testing.T) {
 	t.Run("return Floyd Score", func(t *testing.T) {
 		request := newGetScoreRequest("Floyd")
 		recorder := httptest.NewRecorder()
-		server.ServerHTTP(recorder, request)
+		server.ServeHTTP(recorder, request)
 		assertResponseBody(recorder.Body.String(), "10", t)
 
 	})
