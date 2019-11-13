@@ -14,6 +14,7 @@ func TestGETPlayers(t *testing.T) {
 			"Pepper": 20,
 			"Floyd":  10,
 		},
+		nil,
 	}
 
 	server := &PlayerServer{&store}
@@ -51,8 +52,11 @@ func TestGETPlayers(t *testing.T) {
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
+		nil,
 	}
 	server := &PlayerServer{&store}
+
+	player := "Pepper"
 
 	t.Run("Post", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodPost, "/players/Pepper", nil)
@@ -61,6 +65,14 @@ func TestStoreWins(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		assertStatus(t, response.Code, http.StatusAccepted)
+
+		if len(store.winCalls) != 1 {
+			t.FailNow()
+		}
+
+		if store.winCalls[0] != player {
+			t.FailNow()
+		}
 	})
 }
 
