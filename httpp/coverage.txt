@@ -1,0 +1,15 @@
+mode: atomic
+tdd-practice/httpp/httpse.go:24.58,27.2 2 3
+tdd-practice/httpp/httpse.go:29.50,31.2 1 1
+tdd-practice/httpp/httpse.go:33.73,36.2 2 4
+tdd-practice/httpp/httpse.go:38.72,41.16 3 4
+tdd-practice/httpp/httpse.go:44.2,44.22 1 4
+tdd-practice/httpp/httpse.go:41.16,43.3 1 1
+tdd-practice/httpp/httpse.go:48.74,50.18 2 8
+tdd-practice/httpp/httpse.go:51.23,52.26 1 4
+tdd-practice/httpp/httpse.go:53.22,54.25 1 4
+tdd-practice/httpp/httpse.go:59.52,61.2 1 1
+tdd-practice/httpp/httpse.go:67.54,70.2 2 3
+tdd-practice/httpp/httpse.go:72.63,75.2 2 1
+tdd-practice/httpp/httpse.go:77.13,79.61 2 0
+tdd-practice/httpp/httpse.go:79.61,81.3 1 0
