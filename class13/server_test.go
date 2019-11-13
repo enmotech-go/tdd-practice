@@ -19,4 +19,17 @@ func Test(t *testing.T) {
 			t.FailNow()
 		}
 	})
+
+	t.Run("returns Floyd's score", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/players/Floyd", nil)
+		response := httptest.NewRecorder()
+
+		PlayersServer(response, request)
+		got := response.Body.String()
+		want := "10"
+
+		if got != want {
+			t.FailNow()
+		}
+	})
 }
