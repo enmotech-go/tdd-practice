@@ -38,11 +38,17 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		w.WriteHeader(http.StatusAccepted)
-		return
+
+	switch r.Method {
+	case http.MethodPost:
+		p.processWin(r, w)
+	case http.MethodGet:
+		p.showScore(r, p, w)
 	}
 
+}
+
+func (p *PlayerServer) showScore(r *http.Request, p2 *PlayerServer, w http.ResponseWriter) {
 	player := r.URL.Path[len("/player/"):]
 	score := p.store.GetPlayerScore(player)
 	if score == 0 {
@@ -50,4 +56,11 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	}
 	fmt.Fprint(w, score)
+}
+
+func (p *PlayerServer) processWin(r *http.Request, w http.ResponseWriter) {
+	if r.Method == http.MethodPost {
+		w.WriteHeader(http.StatusAccepted)
+
+	}
 }
