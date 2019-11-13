@@ -8,7 +8,7 @@ import (
 
 func TestServer(t *testing.T) {
 
-	t.Run("retrun Peprrer's Score", func(t *testing.T) {
+	t.Run("return Pepper Score", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/player/Pepper", nil)
 		recorder := httptest.NewRecorder()
 		PlayerServer(recorder, request)
