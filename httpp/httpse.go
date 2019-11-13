@@ -6,14 +6,19 @@ import (
 	"net/http"
 )
 
-func PlayerServer(recorder http.ResponseWriter, request *http.Request) {
-	player := request.URL.Path[len("/player/"):]
+func GetPlayerScore(player string) string {
 	if player == "Pepper" {
-		fmt.Fprintf(recorder, "20")
+		return "20"
 	}
 	if player == "floyd" {
-		fmt.Fprintf(recorder, "10")
+		return "10"
 	}
+	return ""
+}
+
+func PlayerServer(recorder http.ResponseWriter, request *http.Request) {
+	player := request.URL.Path[len("/player/"):]
+	fmt.Fprintf(recorder, GetPlayerScore(player))
 }
 
 func main() {
