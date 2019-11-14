@@ -104,8 +104,9 @@ func assertStatus(t *testing.T, got,want int) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := InMemoryPlayerStore{}
-	server := PlayerServer{&store}
+	// store := InMemoryPlayerStore{}
+	store := NewInMemoryPlayerStore()
+	server := PlayerServer{store}
 	player := "Pepper"
 
 	request := newPostWinRequest(player) // postman test
