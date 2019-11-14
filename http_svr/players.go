@@ -42,7 +42,7 @@ func (p *PlayerServer) showScore(w http.ResponseWriter, player string) {
 	// w.WriteHeader(404)
 	score := p.store.GetPlayerScore(player)
 	if score == 0 {
-		w.WriteHeader(404) // did't exist player'score is 0
+		w.WriteHeader(http.StatusNotFound) // did't exist player'score is 0
 	}
 	// score = 2
 	fmt.Fprint(w, score)

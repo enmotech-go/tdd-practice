@@ -15,11 +15,11 @@ const (
 	spanish            = "Spanish"
 	spanishHelloPrefix = "Hola, "
 	french             = "French"
-	frenchHelloPrefix  = "French, "
+	frenchHelloPrefix  = "FHello, "
 )
 
 func main() {
-	fmt.Println(Hello("world", ""))
+	fmt.Println(Hello("world", "NiHAO"))
 }
 
 func Hello(name, language string) string {
@@ -39,7 +39,7 @@ func Hello(name, language string) string {
 
 func greetingPrefix(language string) (prefix string) {
 	switch language {
-	case frenchHelloPrefix:
+	case french:
 		prefix = frenchHelloPrefix
 	case spanish:
 		prefix = spanishHelloPrefix
