@@ -44,6 +44,16 @@ func TestWalk(t *testing.T) {
 		},
 		{
 			"Nested fields",
+			// struct {
+			// 	Name string
+			// 	Profile struct {
+			// 		Age  int
+			// 		City string
+			// 	}
+			// }{"Chris", struct {
+			// 	Age  int
+			// 	City string
+			// }{33, "London"}},
 			Person{
 				"Chris",
 				Profile{33, "London"},
@@ -62,18 +72,26 @@ func TestWalk(t *testing.T) {
 			"Slices",
 			[]Profile{
 				{33, "London"},
-				{34, "Xiaoming"},
+				{34, "Reykjavík"},
 			},
-			[]string{"London", "Xiaoming"},
+			[]string{"London", "Reykjavík"},
 		},
 		{
 			"Arrays",
 			[2]Profile{
 				{33, "London"},
-				{34, "Xiaoming"},
+				{34, "Reykjavík"},
 			},
-			[]string{"London", "Xiaoming"},
+			[]string{"London", "Reykjavík"},
 		},
+		// {
+		// 	"Maps",
+		// 	map[string]string{
+		// 		"Foo": "Bar",
+		// 		"Baz": "Boz",
+		// 	},
+		// 	[]string{"Bar", "Boz"},
+		// },
 	}
 
 	for _, v := range cases {
@@ -88,7 +106,20 @@ func TestWalk(t *testing.T) {
 			}
 		})
 	}
-	t.Log("reflect finished")
+	t.Run("with maps", func(t *testing.T) {
+		aMap := map[string]string{
+			"Foo": "Bar",
+			"Baz": "Boz",
+		}
+
+		var got []string
+		walk(aMap, func(input string) {
+			got = append(got, input)
+		})
+
+		assertContains(t, got, "Bar")
+		assertContains(t, got, "Boz")
+	})
 }
 
 func assertContains(t *testing.T, haystack []string, needle string) {

@@ -6,20 +6,9 @@ import (
 )
 
 /**
-func main() {
-	fmt.Println("开始进行reflect用法学习")
-	mock := struct {
-		// Age int
-		Name string
-	}{
-		"小明",
-	}
-	fn := func(s string) {
-		fmt.Printf("val is %s \n", s)
-	}
-	walk(mock, fn)
-	fmt.Println("reflect用法学习结束啦！")
-}
+class_12
+demand: 编写函数walk(x interface{}, fn func(string))，对x中的所有字符串字段递归地调用fn函数。
+反射提供检查自身结构体类型的能力，是元编程的一种形式。使用Interface{}会失去对类型安全的检查，
 */
 
 func walk(x interface{}, fn func(input string)) {
