@@ -1,11 +1,11 @@
 package concurrency
 
 import (
-	"testing"
 	"reflect"
+	"testing"
 )
 
-func BenchmarkCheckWebsites(b *testing.B)  {
+func BenchmarkCheckWebsites(b *testing.B) {
 	urls := make([]string, 100)
 	count := 100
 	for i := 0; i < count; i++ {
