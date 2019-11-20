@@ -20,6 +20,18 @@ type PlayerServer struct {
 //	fmt.Fprint(w, GetPlayerScore(player))
 //}
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	router:= http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+
+	router.ServeHTTP(w, r)
+	router.ServeHTTP(w,r)
+}
+
+func (p *PlayerServer) leagueHandler(w http.ResponseWriter,r *http.Request)  {
+	w.WriteHeader(http.StatusOK)
+}
+func (p *PlayerServer)playersHandler(w http.ResponseWriter,r *http.Request)  {
 	player := r.URL.Path[len("/players/"):]
 
 	switch r.Method {
