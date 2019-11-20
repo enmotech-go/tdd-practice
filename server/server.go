@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 type PlayerServer struct {
@@ -32,9 +34,19 @@ func NewPlayerServer(store PlayerStore) *PlayerServer  {
 //func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //	p.ServeHTTP(w,r)
 //}
-
+type Player struct {
+	Name string
+	Wins int
+}
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter,r *http.Request)  {
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(p.store.GetLeague())
+	//w.WriteHeader(http.StatusOK)
+}
+func (p *PlayerServer) getLeagueTable()[]Player  {
+	return []Player{
+		{"Chris",20},
+	}
 }
 func (p *PlayerServer)playersHandler(w http.ResponseWriter,r *http.Request)  {
 	player := r.URL.Path[len("/players/"):]
@@ -81,6 +93,10 @@ type InMemoryPlayerStore struct{
 	store map[string]int
 }
 
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	return nil
+}
+
 func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.store[name]++
 }
@@ -98,3 +114,4 @@ func main() {
 		log.Fatalf("could not listen on port 5000 %v", err)
 	}
 }
+
