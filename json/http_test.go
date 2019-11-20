@@ -14,6 +14,7 @@ func TestGETPlayers(t *testing.T) {
 			"Floyd":  10,
 		},
 		nil,
+		nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -68,6 +69,7 @@ func assertResponseBody(t *testing.T, got, want string) {
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
+		nil,
 		nil,
 	}
 	server := NewPlayerServer(&store)
