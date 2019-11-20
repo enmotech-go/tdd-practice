@@ -76,12 +76,17 @@ func (s *StubPlayerStore) RecordWin(name string) {
 //}
 
 func (p *PlayerServer) leagueHandle(w http.ResponseWriter, r *http.Request) {
-	leagueTable := []Player{
-		{"Chris", 20},
-	}
+	leagueTable := p.getLeagueTable()
 	json.NewEncoder(w).Encode(leagueTable)
 	w.WriteHeader(http.StatusOK)
 
+}
+
+func (p *PlayerServer) getLeagueTable() []Player {
+	leagueTable := []Player{
+		{"Chris", 20},
+	}
+	return leagueTable
 }
 func (p *PlayerServer) playerHandle(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/player/"):]
