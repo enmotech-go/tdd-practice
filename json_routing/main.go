@@ -16,7 +16,7 @@ demand: 新增/league端点，返回玩家清单。
 
 func http_svr() {
 	fmt.Println("hi http_svr")
-	server := &PlayerServer{NewInMemoryPlayerStore()}
+	server := NewPlayerServer(NewInMemoryPlayerStore())
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("listen on 5000 is failed, %v", err)
 	}

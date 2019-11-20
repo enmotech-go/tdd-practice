@@ -1,40 +1,67 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
+const jsonContentType = "json/application"
+
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 type PlayerServer struct {
 	store PlayerStore
+	// router *http.ServeMux
+	http.Handler
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	// p := &PlayerServer{
+	// 	store,
+	// 	http.NewServeMux(),
+	// }
+	p := new(PlayerServer)
+	p.store = store
 	router := http.NewServeMux()
 
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-	router.ServeHTTP(w, r)
-	// if r.Method == http.MethodPost {
-	// 	w.WriteHeader(http.StatusAccepted)
-	// 	return
-	// }
-	// player := r.URL.Path[len("/players/"):]
-	// // w.WriteHeader(404)
-	// score := p.store.GetPlayerScore(player)
-	// if score == 0 {
-	// 	w.WriteHeader(404)
-	// }
-	// fmt.Fprint(w, score)
+
+	p.Handler = router
+	return p
 }
 
+// func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// 	// router := http.NewServeMux()
+
+// 	// router.Handle("/league", http.HandlerFunc(p.leagueHandler))
+// 	// router.Handle("/players/", http.HandlerFunc(p.playersHandler))
+// 	// router.ServeHTTP(w, r)
+// 	// if r.Method == http.MethodPost {
+// 	// 	w.WriteHeader(http.StatusAccepted)
+// 	// 	return
+// 	// }
+// 	// player := r.URL.Path[len("/players/"):]
+// 	// // w.WriteHeader(404)
+// 	// score := p.store.GetPlayerScore(player)
+// 	// if score == 0 {
+// 	// 	w.WriteHeader(404)
+// 	// }
+// 	// fmt.Fprint(w, score)
+
+// 	p.router.ServeHTTP(w, r)
+// }
+
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	// w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", jsonContentType)
+	json.NewEncoder(w).Encode(p.store.GetLeague())
+
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +109,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string // 监视收集
+	league   []Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -93,18 +121,11 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
-type InMemoryPlayerStore struct {
-	store map[string]int
+func (s *StubPlayerStore) GetLeague() []Player {
+	return s.league
 }
 
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return i.store[name]
-}
-
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-	i.store[name]++ // 记录次数后GetPlayerScore返回
-}
-
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-	return &InMemoryPlayerStore{map[string]int{}}
+type Player struct {
+	Name string
+	Wins int
 }
