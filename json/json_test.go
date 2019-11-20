@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+const jsonContentType = "application/json"
+
 func TestLeague(t *testing.T) {
 
 	t.Run("it returns the league table as JSON", func(t *testing.T) {
@@ -33,9 +35,7 @@ func TestLeague(t *testing.T) {
 			t.Fatalf("Unable to parse response from server '%s' into slice of Player, '%v'", response.Body, err)
 		}
 
-		if response.Header().Get("content-type") != "application/json" {
-			t.Errorf("response did not have content-type of application/json, got %v", response.HeaderMap)
-		}
+		assertContentType(t, response, jsonContentType)
 
 		assertStatus(t, response.Code, http.StatusOK)
 
@@ -43,4 +43,11 @@ func TestLeague(t *testing.T) {
 			t.Errorf("got %v want %v", got, wantedLeague)
 		}
 	})
+}
+
+func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
+	t.Helper()
+	if response.Header().Get("content-type") != want {
+		t.Errorf("response did not have content-type of %s, got %v", want, response.HeaderMap)
+	}
 }
