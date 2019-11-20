@@ -1,11 +1,16 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 )
 
+type Player struct {
+	Name string
+	Wins int
+}
 type InMemoryPlayerStore struct {
 	store map[string]int
 }
@@ -71,6 +76,10 @@ func (s *StubPlayerStore) RecordWin(name string) {
 //}
 
 func (p *PlayerServer) leagueHandle(w http.ResponseWriter, r *http.Request) {
+	leagueTable := []Player{
+		{"Chris", 20},
+	}
+	json.NewEncoder(w).Encode(leagueTable)
 	w.WriteHeader(http.StatusOK)
 
 }
