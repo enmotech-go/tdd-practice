@@ -118,11 +118,23 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
 	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
+	t.Run("get score ", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newGetScoreRequest(player))
+		newGetRequestStart(t, response.Code, http.StatusOK)
+		assertResponseBody("3", response.Body.String(), t)
+	})
 
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
-	newGetRequestStart(t, response.Code, http.StatusOK)
-	assertResponseBody("3", response.Body.String(), t)
+	t.Run("get league", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newLeagueRequest())
+		newGetRequestStart(t, response.Code, http.StatusOK)
+		got := getLeagueFromResponse(t, response.Body)
+		want := []Player{
+			{"Pepper", 3},
+		}
+		assertLeague(t, got, want)
+	})
 }
 
 //func TestLeague(t *testing.T) {
@@ -140,6 +152,8 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 //
 //}
 
+const jsonContentType = "application/json"
+
 func TestLeague(t *testing.T) {
 	t.Run("it retruns 200 on /league", func(t *testing.T) {
 		wantedLeague := []Player{
@@ -154,9 +168,7 @@ func TestLeague(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, request)
 
-		if response.Header().Get("content-type") != "application/json" {
-			t.Errorf("response did not have content-type of application/json, got %v", response.HeaderMap)
-		}
+		assertContentType(response, t, jsonContentType)
 
 		var got []Player
 		got = getLeagueFromResponse(t, response.Body)
@@ -164,6 +176,13 @@ func TestLeague(t *testing.T) {
 		assertLeague(t, got, wantedLeague)
 	})
 
+}
+
+func assertContentType(response *httptest.ResponseRecorder, t *testing.T, want string) {
+	t.Helper()
+	if response.Header().Get("content-type") != want {
+		t.Errorf("response did not have content-type of application/json, got %v", response.HeaderMap)
+	}
 }
 
 func newLeagueRequest() *http.Request {
