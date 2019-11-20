@@ -15,7 +15,7 @@ func TestPlayerServer(t *testing.T) {
 		},
 		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("get pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -70,7 +70,7 @@ func TestStoreWins(t *testing.T) {
 		map[string]int{},
 		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("server returns accepted on POST", func(t *testing.T) {
 		player := "Pepper"
@@ -96,7 +96,7 @@ func newPostWinRequest(name string) *http.Request {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	server := PlayerServer{NewInMemoryPlayerStore()}
+	server := NewPlayerServer(NewInMemoryPlayerStore())
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
@@ -112,7 +112,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 
 func TestLeague(t *testing.T) {
 	store := StubPlayerStore{}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("it returns 200 on /league", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
