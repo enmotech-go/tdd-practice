@@ -6,6 +6,8 @@ import (
 	"net/http"
 )
 
+const jsonContentType = "application/json"
+
 func main() {
 	handler := NewPlayerServer(NewInMemoryPlayerStore())
 	if err := http.ListenAndServe(":5000", handler); err != nil {
@@ -16,6 +18,7 @@ func main() {
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 type Player struct {
@@ -39,6 +42,14 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 
 func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.store[name]++
+}
+
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	var league []Player
+	for name, wins := range i.store {
+		league = append(league, Player{name, wins})
+	}
+	return league
 }
 
 type PlayerServer struct {
@@ -75,14 +86,9 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(p.getLeagueTable())
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(p.store.GetLeague())
 	w.WriteHeader(http.StatusOK)
-}
-
-func (p *PlayerServer) getLeagueTable() []Player {
-	return []Player{
-		{"Chris", 20},
-	}
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
