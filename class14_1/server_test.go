@@ -154,6 +154,10 @@ func TestLeague(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, request)
 
+		if response.Header().Get("content-type") != "application/json" {
+			t.Errorf("response did not have content-type of application/json, got %v", response.HeaderMap)
+		}
+
 		var got []Player
 		got = getLeagueFromResponse(t, response.Body)
 		newGetRequestStart(t, response.Code, http.StatusOK)
