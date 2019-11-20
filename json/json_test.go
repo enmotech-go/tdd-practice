@@ -33,6 +33,10 @@ func TestLeague(t *testing.T) {
 			t.Fatalf("Unable to parse response from server '%s' into slice of Player, '%v'", response.Body, err)
 		}
 
+		if response.Header().Get("content-type") != "application/json" {
+			t.Errorf("response did not have content-type of application/json, got %v", response.HeaderMap)
+		}
+
 		assertStatus(t, response.Code, http.StatusOK)
 
 		if !reflect.DeepEqual(got, wantedLeague) {
