@@ -52,6 +52,18 @@ func (s *StubPlayerStore) RecordWin(name string) {
 }
 
 func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	router := http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(p.leagueHandle))
+	router.Handle("/player/", http.HandlerFunc(p.playerHandle))
+
+}
+
+func (p *PlayerServer) leagueHandle(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+
+}
+func (p *PlayerServer) playerHandle(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/player/"):]
 	switch r.Method {
 	case http.MethodPost:
@@ -59,7 +71,6 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		p.showScore(player, w)
 	}
-
 }
 
 func (p *PlayerServer) showScore(player string, w http.ResponseWriter) {
