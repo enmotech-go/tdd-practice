@@ -17,7 +17,7 @@ func TestServer(t *testing.T) {
 				"Pepper": 20,
 				"Floyd":  10,
 			},
-			nil,
+			nil, nil,
 		},
 	}
 
@@ -49,7 +49,7 @@ func TestServer(t *testing.T) {
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{},
-		nil,
+		nil, nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -90,10 +90,10 @@ func newPostWinRequest(name string) *http.Request {
 }
 
 func TestLeague(t *testing.T) {
-	store := StubPlayerStore{}
-	server := NewPlayerServer(&store)
-
 	t.Run("test_return_200_on_/league", func(t *testing.T) {
+		store := StubPlayerStore{}
+		server := NewPlayerServer(&store)
+
 		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, request)
@@ -103,5 +103,26 @@ func TestLeague(t *testing.T) {
 		err := json.NewDecoder(response.Body).Decode(&got)
 		assert.NoError(t, err)
 		assert.Equal(t, http.StatusOK, response.Code)
+	})
+	t.Run("test_returns_the_league_table_as_JSON", func(t *testing.T) {
+		want := []Player{
+			{"Cleo", 32},
+			{"Chris", 20},
+			{"Tiest", 14},
+		}
+
+		store := StubPlayerStore{nil, nil, want}
+		server := NewPlayerServer(&store)
+
+		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, request)
+
+		var got []Player
+
+		err := json.NewDecoder(response.Body).Decode(&got)
+		assert.NoError(t, err)
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, want, got)
 	})
 }

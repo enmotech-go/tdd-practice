@@ -10,11 +10,13 @@ import (
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+	league   []Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -24,6 +26,10 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 
 func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
+}
+
+func (s *StubPlayerStore) GetLeague() []Player {
+	return s.league
 }
 
 type InMemoryPlayerStore struct {
@@ -42,6 +48,10 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.store[name]++
 }
 
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	return nil
+}
+
 func main() {
 	server := NewPlayerServer(NewInMemoryPlayerStore())
 	if err := http.ListenAndServe(":5000", server); err != nil {
@@ -54,14 +64,8 @@ type PlayerServer struct {
 	http.Handler
 }
 
-func (p *PlayerServer) getLeagueTable() []Player {
-	return []Player{
-		{"Chris", 20},
-	}
-}
-
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(p.getLeagueTable())
+	json.NewEncoder(w).Encode(p.store.GetLeague())
 	w.WriteHeader(http.StatusOK)
 }
 
