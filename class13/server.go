@@ -91,9 +91,10 @@ func (s *StubPlayerStore) GetLeague() []Player {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content_type", "application/json")
 	json.NewEncoder(w).Encode(p.store.GetLeague())
 
-	w.WriteHeader(http.StatusOK)
+	//w.WriteHeader(http.StatusOK)
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
