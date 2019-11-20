@@ -13,20 +13,25 @@ type PlayerStore interface {
 
 type PlayerServer struct {
 	store PlayerStore
+	http.Handler
 }
 //func PlayerServer(w http.ResponseWriter, r *http.Request) {
 //	player := r.URL.Path[len("/players/"):]
 //
 //	fmt.Fprint(w, GetPlayerScore(player))
 //}
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	router:= http.NewServeMux()
+func NewPlayerServer(store PlayerStore) *PlayerServer  {
+	p :=new(PlayerServer)
+	p.store=store
+	router:=http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-
-	router.ServeHTTP(w, r)
-	router.ServeHTTP(w,r)
+	p.Handler=router
+	return p
 }
+//func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+//	p.ServeHTTP(w,r)
+//}
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter,r *http.Request)  {
 	w.WriteHeader(http.StatusOK)
@@ -86,7 +91,8 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 
 
 func main() {
-	server := &PlayerServer{NewInMemoryPlayerStore()}
+
+	server := NewPlayerServer(NewInMemoryPlayerStore())
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen on port 5000 %v", err)
