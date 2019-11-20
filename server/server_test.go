@@ -12,15 +12,14 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	server := &PlayerServer{
-		store: &StubPlayerStore{
-			map[string]int{
-				"Pepper": 20,
-				"Floyd":  10,
-			},
-			nil, nil,
+	store := StubPlayerStore{
+		map[string]int{
+			"Pepper": 20,
+			"Floyd":  10,
 		},
+		nil, nil,
 	}
+	server := NewPlayerServer(&store)
 
 	t.Run("test_return_pepper_score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -48,10 +47,7 @@ func TestServer(t *testing.T) {
 }
 
 func TestStoreWins(t *testing.T) {
-	store := StubPlayerStore{
-		map[string]int{},
-		nil, nil,
-	}
+	store := StubPlayerStore{map[string]int{}, []string{}, []Player{}}
 	server := NewPlayerServer(&store)
 
 	t.Run("test_records_wins_when_post", func(t *testing.T) {
