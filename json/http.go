@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,11 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+}
+
+type Player struct {
+	Name string
+	Wins int
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -20,22 +26,34 @@ type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
 }
-
 type PlayerServer struct {
 	store PlayerStore
+	http.Handler
 }
 
-func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := new(PlayerServer)
+
+	p.store = store
 
 	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
 
-	router.ServeHTTP(w, r)
+	p.Handler = router
+
+	return p
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(p.getLeagueTable())
 	w.WriteHeader(http.StatusOK)
+}
+
+func (p *PlayerServer) getLeagueTable() []Player {
+	return []Player{
+		{"Chris", 20},
+	}
 }
 
 func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +87,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 
 func main() {
-	server := &PlayerServer{NewInMemoryPlayerStore()}
+	server := NewPlayerServer(NewInMemoryPlayerStore())
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen on port 5000 %v", err)

@@ -6,6 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 )
+
 func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
 		map[string]int{
@@ -14,7 +15,7 @@ func TestGETPlayers(t *testing.T) {
 		},
 		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("returns Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -69,7 +70,7 @@ func TestStoreWins(t *testing.T) {
 		map[string]int{},
 		nil,
 	}
-	server := &PlayerServer{&store}
+	server := NewPlayerServer(&store)
 
 	t.Run("it records wins on POST", func(t *testing.T) {
 		player := "Pepper"
@@ -96,10 +97,9 @@ func newPostWinRequest(name string) *http.Request {
 	return req
 }
 
-
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	store := InMemoryPlayerStore{}
-	server := PlayerServer{&store}
+	server := NewPlayerServer(&store)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))

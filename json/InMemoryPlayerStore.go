@@ -1,16 +1,15 @@
 package main
 
-
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{map[string]int{}}
 }
 
-type InMemoryPlayerStore struct{
+type InMemoryPlayerStore struct {
 	store map[string]int
 }
 
 func (i *InMemoryPlayerStore) RecordWin(name string) {
-	if i.store == nil{
+	if i.store == nil {
 		i.store = make(map[string]int)
 	}
 	i.store[name]++
