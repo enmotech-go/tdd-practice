@@ -21,7 +21,7 @@ func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.store[name]++
 }
 func main() {
-	server := &PlayerServer{NewInMemoryPlayerStore()}
+	server := NewPlayerServer(NewInMemoryPlayerStore())
 
 	if err := http.ListenAndServe(":15000", server); err != nil {
 		log.Fatal("could not listen on port 5000 ", err)
@@ -35,7 +35,19 @@ type PlayerStore interface {
 }
 
 type PlayerServer struct {
-	store PlayerStore
+	store  PlayerStore
+	router *http.ServeMux
+}
+
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := &PlayerServer{
+		store:  store,
+		router: http.NewServeMux(),
+	}
+	p.router.Handle("/league", http.HandlerFunc(p.leagueHandle))
+	p.router.Handle("/player/", http.HandlerFunc(p.playerHandle))
+
+	return p
 }
 
 type StubPlayerStore struct {
@@ -56,7 +68,7 @@ func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandle))
 	router.Handle("/player/", http.HandlerFunc(p.playerHandle))
-
+	router.ServeHTTP(w, r)
 }
 
 func (p *PlayerServer) leagueHandle(w http.ResponseWriter, r *http.Request) {
