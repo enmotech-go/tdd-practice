@@ -18,6 +18,14 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 	return i.store[name]
 }
 
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	var league []Player
+	for name, wins := range i.store {
+		league = append(league, Player{name, wins})
+	}
+	return league
+}
+
 func main() {
 	server := NewPlayerServer(NewInMemoryPlayerStore())
 	if err := http.ListenAndServe(":5000", http.HandlerFunc(server.ServeHTTP)); err != nil {
