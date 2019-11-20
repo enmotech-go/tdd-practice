@@ -25,9 +25,12 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 func (i *InMemoryPlayerStore) RecordWin(name string) {
 	i.store[name]++
 }
+
+func (i *InMemoryPlayerStore) GetLeague() []Player {
+	return nil
+}
 func main() {
 	server := NewPlayerServer(NewInMemoryPlayerStore())
-
 	if err := http.ListenAndServe(":15000", server); err != nil {
 		log.Fatal("could not listen on port 5000 ", err)
 		return
@@ -37,6 +40,7 @@ func main() {
 type PlayerStore interface {
 	GetPlayerScore(name string) int
 	RecordWin(name string)
+	GetLeague() []Player
 }
 
 type PlayerServer struct {
@@ -57,6 +61,7 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 type StubPlayerStore struct {
 	score    map[string]int
 	winCalls []string
+	League   []Player
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -65,6 +70,10 @@ func (s *StubPlayerStore) GetPlayerScore(name string) int {
 
 func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
+}
+
+func (s *StubPlayerStore) GetLeague() []Player {
+	return s.League
 }
 
 //func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -76,18 +85,12 @@ func (s *StubPlayerStore) RecordWin(name string) {
 //}
 
 func (p *PlayerServer) leagueHandle(w http.ResponseWriter, r *http.Request) {
-	leagueTable := p.getLeagueTable()
-	json.NewEncoder(w).Encode(leagueTable)
+
+	json.NewEncoder(w).Encode(p.store.GetLeague())
 	w.WriteHeader(http.StatusOK)
 
 }
 
-func (p *PlayerServer) getLeagueTable() []Player {
-	leagueTable := []Player{
-		{"Chris", 20},
-	}
-	return leagueTable
-}
 func (p *PlayerServer) playerHandle(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/player/"):]
 	switch r.Method {
