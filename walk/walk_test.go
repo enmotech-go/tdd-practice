@@ -93,10 +93,10 @@ func TestWalk(t *testing.T) {
 		{
 			"Maps",
 			map[string]string{
-				"Foo": "Bar",
+				//"Foo": "Bar",
 				"Baz": "Boz",
 			},
-			[]string{"Bar", "Boz"},
+			[]string{"Boz"},
 		},
 	}
 
