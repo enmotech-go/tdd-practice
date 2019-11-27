@@ -21,6 +21,9 @@ demand: 新增/league端点，返回玩家清单。
 . 为测试创建辅助函数，隐藏文件中杂乱内容
 . 使用sort.Slice对切片排序
 . 利用编辑器安全对应用程序结构更改
+
+
+Tips: 下次课件从错误处理继续
 */
 const dbFileName = "game.db.json"
 
