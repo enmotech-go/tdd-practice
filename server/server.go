@@ -113,7 +113,7 @@ type Player struct {
 }
 
 type FileSystemStore struct {
-	database io.ReadSeeker
+	database io.ReadWriteSeeker
 }
 
 func (f *FileSystemStore) GetLeague() []Player {
