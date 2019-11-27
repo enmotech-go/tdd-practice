@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 )
@@ -17,11 +18,16 @@ type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 }
-//func PlayerServer(w http.ResponseWriter, r *http.Request) {
-//	player := r.URL.Path[len("/players/"):]
-//
-//	fmt.Fprint(w, GetPlayerScore(player))
-//}
+type FileSystemStore struct {
+	database io.Reader
+}
+
+func (f *FileSystemStore)GetLeague()[]Player  {
+	var league []Player
+	json.NewDecoder(f.database).Decode(&league)
+	return league
+}
+
 func NewPlayerServer(store PlayerStore) *PlayerServer  {
 	p :=new(PlayerServer)
 	p.store=store
@@ -76,18 +82,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 	p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
-//
-//func GetPlayerScore(name string) string {
-//	if name == "Pepper" {
-//		return "20"
-//	}
-//
-//	if name == "Floyd" {
-//		return "10"
-//	}
-//
-//	return ""
-//}
+
 func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{map[string]int{}}
 }
