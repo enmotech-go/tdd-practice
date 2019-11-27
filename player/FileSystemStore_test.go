@@ -4,16 +4,16 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strings"
 	"testing"
 )
 
 func TestFileSystemStore(t *testing.T) {
 	t.Run("/league from a reader", func(t *testing.T) {
-		database := strings.NewReader(`[
+
+		database, cleanDatabase := createTempFile(t, `[
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
-
+		defer cleanDatabase()
 		store := FileSystemStore{database}
 
 		got := store.GetLeague()
@@ -30,9 +30,10 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("get player score", func(t *testing.T) {
-		database := strings.NewReader(`[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
+		database, cleanDatabase := createTempFile(t, `[
+            {"Name": "Cleo", "Wins": 10},
+            {"Name": "Chris", "Wins": 33}]`)
+		defer cleanDatabase()
 
 		store := FileSystemStore{database}
 
@@ -42,6 +43,22 @@ func TestFileSystemStore(t *testing.T) {
 
 		assertScoreEquals(t, got, want)
 	})
+
+	t.Run("store wins for existing players", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+        {"Name": "Cleo", "Wins": 10},
+        {"Name": "Chris", "Wins": 33}]`)
+		defer cleanDatabase()
+
+		store := FileSystemStore{database}
+
+		store.RecordWin("Chris")
+
+		got := store.GetPlayerScore("Chris")
+		want := 34
+		assertScoreEquals(t, got, want)
+	})
+
 }
 
 func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
