@@ -62,7 +62,7 @@ func newLeagueRequest() *http.Request {
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	database, cleanDatabase := createTempFile(t, "")
 	defer cleanDatabase()
-	store := &FileSystemStore{database}
+	store := NewFileSystemStore(database)
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -108,7 +108,7 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 		got := store.GetLeague()
 		want := League{
 			{"Cleo", 10},
@@ -125,7 +125,7 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		got := store.GetPlayerScore("Chris")
 
@@ -139,7 +139,7 @@ func TestFileSystemStore(t *testing.T) {
         {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		store.RecordWin("Chris")
 
@@ -154,7 +154,7 @@ func TestFileSystemStore(t *testing.T) {
         {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		store.RecordWin("Pepper")
 
@@ -164,7 +164,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 }
 
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := ioutil.TempFile("", "db")
@@ -180,4 +180,24 @@ func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func(
 	}
 
 	return tmpfile, removeFile
+}
+
+
+func TestTape_Write(t *testing.T) {
+	file, clean := createTempFile(t, "12345")
+	defer clean()
+
+	tape := &tape{file}
+
+	tape.Write([]byte("abc"))
+
+	file.Seek(0, 0)
+	newFileContents, _ := ioutil.ReadAll(file)
+
+	got := string(newFileContents)
+	want := "abc"
+
+	if got != want {
+		t.Errorf("got '%s' want '%s'", got, want)
+	}
 }

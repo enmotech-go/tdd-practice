@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -105,17 +104,25 @@ func (l League) Find(name string) *Player {
 }
 
 type FileSystemStore struct {
-	database io.ReadWriteSeeker
+	database *json.Encoder
+	league League
+}
+
+func NewFileSystemStore(file *os.File) *FileSystemStore {
+	file.Seek(0, 0)
+	league, _ := NewLeague(file)
+	return &FileSystemStore{
+		database: json.NewEncoder(&tape{file}),
+		league:league,
+	}
 }
 
 func (f *FileSystemStore) GetLeague() League {
-	f.database.Seek(0, 0)
-	league, _ := NewLeague(f.database)
-	return league
+	return f.league
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
-	player := f.GetLeague().Find(name)
+	player := f.league.Find(name)
 
 	if player != nil {
 		return player.Wins
@@ -125,18 +132,25 @@ func (f *FileSystemStore) GetPlayerScore(name string) int {
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
-	league := f.GetLeague()
-	player := league.Find(name)
+	player := f.league.Find(name)
 
 	if player != nil {
 		player.Wins++
 	} else {
-		league = append(league, Player{name, 1})
+		f.league = append(f.league, Player{name, 1})
 	}
-
-	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(league)
 }
+
+type tape struct {
+	file *os.File
+}
+
+func (t *tape) Write(p []byte) (n int, err error) {
+	t.file.Truncate(0)
+	t.file.Seek(0, 0)
+	return t.file.Write(p)
+}
+
 const dbFileName = "game.db.json"
 
 func main() {
@@ -146,7 +160,7 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store := &FileSystemStore{db}
+	store := NewFileSystemStore(db)
 	server := NewPlayerServer(store)
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("can not server on 5000 %v" ,err)
