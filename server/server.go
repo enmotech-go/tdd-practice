@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
 type PlayerStore interface {
@@ -104,15 +105,25 @@ type Player struct {
 	Wins int
 }
 
+type tape struct {
+	file *os.File
+}
+
+func (t *tape) Write(p []byte) (n int, err error) {
+	t.file.Truncate(0)
+	t.file.Seek(0, 0)
+	return t.file.Write(p)
+}
+
 type FileSystemStore struct {
-	database io.ReadWriteSeeker
+	database io.Writer
 	league   League
 }
 
-func NewFileSystemStore(database io.ReadWriteSeeker) *FileSystemStore {
-	database.Seek(0, 0)
-	league, _ := NewLeague(database)
-	return &FileSystemStore{database, league}
+func NewFileSystemStore(file *os.File) *FileSystemStore {
+	file.Seek(0, 0)
+	league, _ := NewLeague(file)
+	return &FileSystemStore{&tape{file}, league}
 }
 
 func (f *FileSystemStore) GetLeague() League {
@@ -136,6 +147,5 @@ func (f *FileSystemStore) RecordWin(name string) {
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
-	f.database.Seek(0, 0)
 	json.NewEncoder(f.database).Encode(f.league)
 }
