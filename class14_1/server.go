@@ -127,21 +127,26 @@ type FileSystemStore struct {
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
-	return 0
+	var wins int
+
+	for _, player := range f.GetLeague() {
+		if player.Name == name {
+			wins = player.Wins
+		}
+	}
+
+	return wins
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
 
 }
 
-func (f *FileSystemStore) GetLeague() ([]Player, error) {
+func (f *FileSystemStore) GetLeague() []Player {
 	var league []Player
 	f.database.Seek(0, 0)
-	league, err := NewLeague(f.database)
-	if err != nil {
-		return league, err
-	}
-	return league, nil
+	league, _ = NewLeague(f.database)
+	return league
 }
 
 func NewLeague(data io.Reader) (league []Player, err error) {
