@@ -101,14 +101,18 @@ func newGetScoreRequest(name string) *http.Request {
 
 func TestFileSystemStore(t *testing.T) {
 	t.Run("/league from a reader", func(t *testing.T) {
-	database := strings.NewReader(`[
+		database := strings.NewReader(`[
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
-	store:= FileSystemStore{database}
-	got := store.GetLeague()
-	want := []Player{
-		{"Cleo", 10},
-		{"Chris", 33},
-	}
-	assert.Equal(t, want, got)})
+		store := FileSystemStore{database}
+		got := store.GetLeague()
+		want := []Player{
+			{"Cleo", 10},
+			{"Chris", 33},
+		}
+		assert.Equal(t, want, got)
+		// read again
+		got = store.GetLeague()
+		assert.Equal(t, want, got)
+	})
 }
