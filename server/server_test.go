@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -144,4 +145,20 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
 	err := json.NewDecoder(body).Decode(&league)
 	assert.NoError(t, err)
 	return
+}
+
+func TestFileSystemStore(t *testing.T) {
+	t.Run("league_from_a_reader", func(t *testing.T) {
+		database := strings.NewReader(
+			`[{"Name": "Cleo", "Wins": 10},
+			  {"Name": "Chris", "Wins": 33}]`,
+		)
+		store := FileSystemStore{database}
+		got := store.GetLeague()
+		want := []Player{
+			{"Cleo", 10},
+			{"Chris", 33},
+		}
+		assert.Equal(t, want, got)
+	})
 }
