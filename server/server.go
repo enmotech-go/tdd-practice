@@ -22,22 +22,22 @@ type FileSystemStore struct {
 	database io.ReadWriteSeeker
 }
 
-func (f *FileSystemStore)GetLeague()[]Player  {
-	f.database.Seek(0,0)
-	league ,_:=NewLeague(f.database)
+func (f *FileSystemStore) GetLeague() League {
+	f.database.Seek(0, 0)
+	league, _ := NewLeague(f.database)
 	return league
 }
 
-
-func NewPlayerServer(store PlayerStore) *PlayerServer  {
-	p :=new(PlayerServer)
-	p.store=store
-	router:=http.NewServeMux()
+func NewPlayerServer(store PlayerStore) *PlayerServer {
+	p := new(PlayerServer)
+	p.store = store
+	router := http.NewServeMux()
 	router.Handle("/league", http.HandlerFunc(p.leagueHandler))
 	router.Handle("/players/", http.HandlerFunc(p.playersHandler))
-	p.Handler=router
+	p.Handler = router
 	return p
 }
+
 //func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 //	p.ServeHTTP(w,r)
 //}
@@ -48,17 +48,17 @@ type Player struct {
 
 //const  jsonContentType  =  "application/json"
 
-func (p *PlayerServer) leagueHandler(w http.ResponseWriter,r *http.Request)  {
+func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	json.NewEncoder(w).Encode(p.store.GetLeague())
 	//w.WriteHeader(http.StatusOK)
 }
-func (p *PlayerServer) getLeagueTable()[]Player  {
+func (p *PlayerServer) getLeagueTable() []Player {
 	return []Player{
-		{"Chris",20},
+		{"Chris", 20},
 	}
 }
-func (p *PlayerServer)playersHandler(w http.ResponseWriter,r *http.Request)  {
+func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 	player := r.URL.Path[len("/players/"):]
 
 	switch r.Method {
@@ -88,14 +88,14 @@ func NewInMemoryPlayerStore() *InMemoryPlayerStore {
 	return &InMemoryPlayerStore{map[string]int{}}
 }
 
-type InMemoryPlayerStore struct{
+type InMemoryPlayerStore struct {
 	store map[string]int
 }
 
 func (i *InMemoryPlayerStore) GetLeague() []Player {
 	var league []Player
-	for name ,wins :=range i.store{
-		league=append(league,Player{name,wins})
+	for name, wins := range i.store {
+		league = append(league, Player{name, wins})
 	}
 	return league
 }
@@ -108,7 +108,6 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 	return i.store[name]
 }
 
-
 func main() {
 
 	server := NewPlayerServer(NewInMemoryPlayerStore())
@@ -117,4 +116,3 @@ func main() {
 		log.Fatalf("could not listen on port 5000 %v", err)
 	}
 }
-

@@ -16,6 +16,16 @@ type Reader interface {
 type Seeker interface {
 	Seek(offset int64, whence int) (int64, error)
 }
+type League []Player
+
+func (l League) Find(name string) *Player {
+	for i, p := range l {
+		if p.Name == name {
+			return &l[i]
+		}
+	}
+	return nil
+}
 
 func NewLeague(rdr io.Reader) ([]Player, error) {
 	var league []Player
@@ -28,23 +38,22 @@ func NewLeague(rdr io.Reader) ([]Player, error) {
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
-	var wins int
-	for _,player := range f.GetLeague(){
-		if player.Name==name{
-			wins = player.Wins
-			break
-		}
+	player := f.GetLeague().Find(name)
+	if player != nil {
+		return player.Wins
+
 	}
-	return wins
+	return 0
 }
 
-func(f *FileSystemStore)RecordWin (name string)  {
-	league :=f.GetLeague()
-	for i , player :=range league{
-		if player.Name==name{
-			league[i].Wins++
-		}
+func (f *FileSystemStore) RecordWin(name string) {
+	league := f.GetLeague()
+	player := league.Find(name)
+
+	if player != nil {
+		player.Wins++
 	}
-	f.database.Seek(0,0)
+
+	f.database.Seek(0, 0)
 	json.NewEncoder(f.database).Encode(league)
 }
