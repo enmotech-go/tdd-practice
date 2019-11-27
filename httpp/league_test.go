@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -97,3 +98,17 @@ func newGetScoreRequest(name string) *http.Request {
 	return req
 }
 
+
+func TestFileSystemStore(t *testing.T) {
+	t.Run("/league from a reader", func(t *testing.T) {
+	database := strings.NewReader(`[
+            {"Name": "Cleo", "Wins": 10},
+            {"Name": "Chris", "Wins": 33}]`)
+	store:= FileSystemStore{database}
+	got := store.GetLeague()
+	want := []Player{
+		{"Cleo", 10},
+		{"Chris", 33},
+	}
+	assert.Equal(t, want, got)})
+}
