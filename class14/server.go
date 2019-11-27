@@ -16,7 +16,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
-	store := &FileSystemStore{db}
+	// store := &FileSystemStore{db}
+	store := NewFileSystemStore(db)
 	server := NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
@@ -119,35 +120,39 @@ type Player struct {
 //io
 type FileSystemStore struct {
 	database io.ReadWriteSeeker
+	league   League
+}
+
+func NewFileSystemStore(database io.ReadWriteSeeker) *FileSystemStore {
+	database.Seek(0, 0)
+	league, _ := NewLeague(database)
+	return &FileSystemStore{
+		database: database,
+		league:   league,
+	}
 }
 
 func (f *FileSystemStore) GetLeague() League {
-	f.database.Seek(0, 0)
-	result, _ := NewLeague(f.database)
-	return result
+	return f.league
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) (int, bool) {
 	var wins int
 	var exist bool
-	player := f.GetLeague().Find(name)
+	player := f.league.Find(name)
 	if player != nil {
-		wins = player.Wins
-		exist = true
+		return player.Wins, true
 	}
-
 	return wins, exist
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
-	league := f.GetLeague()
-	player := league.Find(name)
+	player := f.league.Find(name)
 	if player != nil {
 		player.Wins++
 	} else {
-		league = append(league, Player{name, 1})
+		f.league = append(f.league, Player{name, 1})
 	}
-
 	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(league)
+	json.NewEncoder(f.database).Encode(f.league)
 }
