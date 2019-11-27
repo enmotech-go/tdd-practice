@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 )
 
@@ -68,23 +67,4 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		p.showScore(w, player)
 	}
-}
-
-func NewLeague(reader io.Reader) ([]Player, error) {
-	var league []Player
-	err := json.NewDecoder(reader).Decode(&league)
-	if err != nil {
-		err = fmt.Errorf("problem parsing league, %v", err)
-	}
-	return league, err
-}
-
-type FileSystemStore struct {
-	database io.ReadSeeker
-}
-
-func (f *FileSystemStore) GetLeague() []Player {
-	f.database.Seek(0, 0)
-	league, _ := NewLeague(f.database)
-	return league
 }
