@@ -111,7 +111,7 @@ func newPostWinRequest(name string) *http.Request {
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	database,cleanDataBase := createTempFile(t,"")
 	defer cleanDataBase()
-	store := &FileSystemStore{database}
+	store := NewFileSystemStore(database)
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -218,7 +218,7 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 		got := store.GetLeague()
 		want := []Player{
 			{"Cleo", 10},
@@ -234,7 +234,7 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
 
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 
 		got := store.GetPlayerScore("Chris")
 
@@ -246,7 +246,7 @@ func TestFileSystemStore(t *testing.T) {
 	t.Run("store wins for existing players", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
-		store := FileSystemStore{database:database}
+		store := NewFileSystemStore(database)
 		store.RecordWin("Chris")
 		got :=store.GetPlayerScore("Chris")
 		want:=34
@@ -255,7 +255,7 @@ func TestFileSystemStore(t *testing.T) {
 	t.Run("store wins for existing players", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
-		store := FileSystemStore{database}
+		store := NewFileSystemStore(database)
 		store.RecordWin("Pepper")
 		got :=store.GetPlayerScore("Pepper")
 		want:=1
@@ -269,7 +269,7 @@ func assertScoreEquals(t *testing.T, got , want int)  {
 	}
 }
 
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := ioutil.TempFile("", "db")

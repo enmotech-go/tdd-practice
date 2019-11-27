@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 )
 
 type PlayerStore interface {
@@ -12,19 +13,32 @@ type PlayerStore interface {
 	RecordWin(name string)
 	GetLeague() League
 }
-
+type ReadWriteSeekTruncate interface {
+	io.ReadWriteSeeker
+	Truncate(size int64) error
+}
 type PlayerServer struct {
 	store PlayerStore
 	http.Handler
 }
 type FileSystemStore struct {
-	database io.ReadWriteSeeker
+	database *json.Encoder
+	league League
+}
+
+func NewFileSystemStore(file *os.File) (*FileSystemStore) {
+	file.Seek(0, 0)
+	league, _ := NewLeague(file)
+
+	return &FileSystemStore{
+		database: json.NewEncoder(&tape{file}),
+		league:   league,
+	}
 }
 
 func (f *FileSystemStore) GetLeague() League {
-	f.database.Seek(0, 0)
-	league, _ := NewLeague(f.database)
-	return league
+
+	return f.league
 }
 
 func NewPlayerServer(store PlayerStore) *PlayerServer {
@@ -37,15 +51,11 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 	return p
 }
 
-//func (p *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-//	p.ServeHTTP(w,r)
-//}
 type Player struct {
 	Name string
 	Wins int
 }
 
-//const  jsonContentType  =  "application/json"
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
@@ -82,27 +92,27 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 	p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
-
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-	return &InMemoryPlayerStore{map[string]int{}}
-}
-
-type InMemoryPlayerStore struct {
-	store map[string]int
-}
-
-func (i *InMemoryPlayerStore) GetLeague() []Player {
-	var league []Player
-	for name, wins := range i.store {
-		league = append(league, Player{name, wins})
-	}
-	return league
-}
-
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-	i.store[name]++
-}
-
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return i.store[name]
-}
+//
+//func NewInMemoryPlayerStore() *InMemoryPlayerStore {
+//	return &InMemoryPlayerStore{map[string]int{}}
+//}
+//
+//type InMemoryPlayerStore struct {
+//	store map[string]int
+//}
+//
+//func (i *InMemoryPlayerStore) GetLeague() []Player {
+//	var league []Player
+//	for name, wins := range i.store {
+//		league = append(league, Player{name, wins})
+//	}
+//	return league
+//}
+//
+//func (i *InMemoryPlayerStore) RecordWin(name string) {
+//	i.store[name]++
+//}
+//
+//func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
+//	return i.store[name]
+//}

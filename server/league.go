@@ -38,7 +38,7 @@ func NewLeague(rdr io.Reader) ([]Player, error) {
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
-	player := f.GetLeague().Find(name)
+	player := f.league.Find(name)
 	if player != nil {
 		return player.Wins
 
@@ -47,15 +47,15 @@ func (f *FileSystemStore) GetPlayerScore(name string) int {
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
-	league := f.GetLeague()
-	player := league.Find(name)
+
+	player := f.league.Find(name)
 
 	if player != nil {
 		player.Wins++
 	}else{
-			league = append(league,Player{name,1})
+			f.league = append(f.league,Player{name,1})
 	}
 
-	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(league)
+	//f.database.Seek(0, 0)
+	f.database.Encode(f.league)
 }
