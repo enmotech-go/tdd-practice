@@ -82,7 +82,10 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	database, cleanDatabase := createTempFile(t, "")
+	defer cleanDatabase()
+	store := &FileSystemStore{database}
+
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -235,14 +238,15 @@ func TestFileSystemStore(t *testing.T) {
 
 		store := FileSystemStore{database}
 
-		store.RecordWin("Chris")
+		store.RecordWin("Pepper")
 
-		got := store.GetPlayerScore("Chris")
-		want := 34
+		got := store.GetPlayerScore("Pepper")
+		want := 1
 
 		assertScoreEquals(t, got, want)
 
 	})
+
 }
 
 func assertScoreEquals(t *testing.T, got, want int) {
