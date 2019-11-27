@@ -12,7 +12,7 @@ func NewLeague(rdr io.Reader) ([]Player, error) {
 	if err != nil {
 		err = fmt.Errorf("problem parsing league, %v", err)
 	}
-
+	//
 	return league, err
 }
 
