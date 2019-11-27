@@ -6,10 +6,18 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
+const dbFileName = "game.db.json"
+
 func main() {
-	server := NewPlayerServer(NewInMemoryPlayerStore())
+	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		log.Fatalf("problem opening %s %v", dbFileName, err)
+	}
+	store := &FileSystemStore{db}
+	server := NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen on port 5000 %v", err)
@@ -119,14 +127,16 @@ func (f *FileSystemStore) GetLeague() League {
 	return result
 }
 
-func (f *FileSystemStore) GetPlayerScore(name string) int {
+func (f *FileSystemStore) GetPlayerScore(name string) (int, bool) {
 	var wins int
+	var exist bool
 	player := f.GetLeague().Find(name)
 	if player != nil {
 		wins = player.Wins
+		exist = true
 	}
 
-	return wins
+	return wins, exist
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
@@ -134,6 +144,8 @@ func (f *FileSystemStore) RecordWin(name string) {
 	player := league.Find(name)
 	if player != nil {
 		player.Wins++
+	} else {
+		league = append(league, Player{name, 1})
 	}
 
 	f.database.Seek(0, 0)

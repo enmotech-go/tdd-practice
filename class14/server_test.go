@@ -69,7 +69,11 @@ func TestGETPlayers(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	// store := NewInMemoryPlayerStore()
+	database, cleanDatabase := createTempFile(t, "")
+	defer cleanDatabase()
+	store := &FileSystemStore{database}
+
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -207,7 +211,7 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 		store := FileSystemStore{database}
-		got := store.GetPlayerScore("Chris")
+		got, _ := store.GetPlayerScore("Chris")
 		want := 33
 		if got != want {
 			t.Errorf("got %d want %d", got, want)
@@ -220,9 +224,10 @@ func TestFileSystemStore(t *testing.T) {
 			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 		store := FileSystemStore{database}
-		store.RecordWin("Chris")
-		got := store.GetPlayerScore("Chris")
-		want := 34
+
+		store.RecordWin("Pepper")
+		got, _ := store.GetPlayerScore("Pepper")
+		want := 1
 		assertScoreEquals(t, got, want)
 	})
 
