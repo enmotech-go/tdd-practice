@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 )
@@ -89,6 +90,16 @@ func (s *StubPlayerStore) GetLeague() []Player {
 
 func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
+}
+
+type FileSystemStore struct {
+	database io.Reader
+}
+
+func (f *FileSystemStore) GetLeague() []Player {
+	var league []Player
+	json.NewDecoder(f.database).Decode(&league)
+	return league
 }
 
 type InMemoryPlayerStore struct {
