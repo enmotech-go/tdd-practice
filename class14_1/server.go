@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 )
@@ -119,4 +120,22 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 	p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 
+}
+
+type FileSystemStore struct {
+	database io.Reader
+}
+
+func (f *FileSystemStore) GetPlayerScore(name string) int {
+	return 0
+}
+
+func (f *FileSystemStore) RecordWin(name string) {
+
+}
+
+func (f *FileSystemStore) GetLeague() []Player {
+	var league []Player
+	json.NewDecoder(f.database).Decode(&league)
+	return league
 }
