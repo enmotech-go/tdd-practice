@@ -132,15 +132,15 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 
 type FileSystemStore struct {
-	database io.ReadWriteSeeker
+	database *json.Encoder
 	league   League
 }
 
-func NewFileSystemStore(database io.ReadWriteSeeker) *FileSystemStore {
-	database.Seek(0, 0)
-	league, _ := NewLeague(database)
+func NewFileSystemStore(file *os.File) *FileSystemStore {
+	file.Seek(0, 0)
+	league, _ := NewLeague(file)
 
-	return &FileSystemStore{database: database, league: league}
+	return &FileSystemStore{database: json.NewEncoder(&tape{file: file}), league: league}
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
@@ -170,8 +170,7 @@ func (f *FileSystemStore) RecordWin(name string) {
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
-	f.database.Seek(0, 0)
-	json.NewEncoder(f.database).Encode(f.league)
+	f.database.Encode(f.league)
 
 }
 
