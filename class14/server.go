@@ -110,11 +110,22 @@ type Player struct {
 
 //io
 type FileSystemStore struct {
-	database io.ReadSeeker
+	database io.ReadWriteSeeker
 }
 
 func (f *FileSystemStore) GetLeague() []Player {
 	f.database.Seek(0, 0)
 	result, _ := NewLeague(f.database)
 	return result
+}
+
+func (f *FileSystemStore) GetPlayerScore(name string) int {
+	var wins int
+	for _, player := range f.GetLeague() {
+		if player.Name == name {
+			wins = player.Wins
+			break
+		}
+	}
+	return wins
 }
