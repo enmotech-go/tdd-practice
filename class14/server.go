@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 const dbFileName = "game.db.json"
@@ -127,19 +128,37 @@ type FileSystemStore struct {
 	league   League
 }
 
-func NewFileSystemStore(database *os.File) (*FileSystemStore, error) {
-	database.Seek(0, 0)
-	league, err := NewLeague(database)
+func NewFileSystemStore(file *os.File) (*FileSystemStore, error) {
+	err := initialisePlayerDBFile(file)
 	if err != nil {
 		return nil, err
 	}
+	league, err := NewLeague(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
 	return &FileSystemStore{
-		database: json.NewEncoder(&tape{database}),
+		database: json.NewEncoder(&tape{file}),
 		league:   league,
 	}, nil
 }
+func initialisePlayerDBFile(file *os.File) error {
+	file.Seek(0, 0)
+	info, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, 0)
+	}
+	return nil
+}
 
 func (f *FileSystemStore) GetLeague() League {
+	sort.Slice(f.league, func(i, j int) bool {
+		return f.league[i].Wins > f.league[j].Wins
+	})
 	return f.league
 }
 
