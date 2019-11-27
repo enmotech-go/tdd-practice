@@ -238,7 +238,7 @@ func assertScoreEquals(t *testing.T, got, want int) {
 		t.Errorf("got %d want %d", got, want)
 	}
 }
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	t.Helper()
 	tmpfile, err := ioutil.TempFile("", "db")
 	if err != nil {
