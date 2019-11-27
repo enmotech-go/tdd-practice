@@ -26,7 +26,7 @@ func (s *StubPlayerStore) RecordWin(name string) {
 
 }
 
-func (s *StubPlayerStore) GetLeague() []Player {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 func TestGETPlayers(t *testing.T) {
@@ -214,8 +214,25 @@ func TestFileSystemStore(t *testing.T) {
 		}
 	})
 
+	t.Run("store wins for existing players", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+			{"Name": "Cleo", "Wins": 10},
+			{"Name": "Chris", "Wins": 33}]`)
+		defer cleanDatabase()
+		store := FileSystemStore{database}
+		store.RecordWin("Chris")
+		got := store.GetPlayerScore("Chris")
+		want := 34
+		assertScoreEquals(t, got, want)
+	})
+
 }
 
+func assertScoreEquals(t *testing.T, got, want int) {
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
+	}
+}
 func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
 	t.Helper()
 	tmpfile, err := ioutil.TempFile("", "db")

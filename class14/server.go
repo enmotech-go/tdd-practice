@@ -33,7 +33,7 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) (int, bool) {
 
 	return s, ok
 }
-func (i *InMemoryPlayerStore) GetLeague() []Player {
+func (i *InMemoryPlayerStore) GetLeague() League {
 	var league []Player
 	for name, wins := range i.store {
 		league = append(league, Player{name, wins})
@@ -45,7 +45,7 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 type PlayerStore interface {
 	GetPlayerScore(name string) (int, bool)
 	RecordWin(name string)
-	GetLeague() []Player
+	GetLeague() League
 }
 
 type PlayerServer struct {
@@ -113,7 +113,7 @@ type FileSystemStore struct {
 	database io.ReadWriteSeeker
 }
 
-func (f *FileSystemStore) GetLeague() []Player {
+func (f *FileSystemStore) GetLeague() League {
 	f.database.Seek(0, 0)
 	result, _ := NewLeague(f.database)
 	return result
@@ -121,11 +121,21 @@ func (f *FileSystemStore) GetLeague() []Player {
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
 	var wins int
-	for _, player := range f.GetLeague() {
-		if player.Name == name {
-			wins = player.Wins
-			break
-		}
+	player := f.GetLeague().Find(name)
+	if player != nil {
+		wins = player.Wins
 	}
+
 	return wins
+}
+
+func (f *FileSystemStore) RecordWin(name string) {
+	league := f.GetLeague()
+	player := league.Find(name)
+	if player != nil {
+		player.Wins++
+	}
+
+	f.database.Seek(0, 0)
+	json.NewEncoder(f.database).Encode(league)
 }
