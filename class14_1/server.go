@@ -134,8 +134,18 @@ func (f *FileSystemStore) RecordWin(name string) {
 
 }
 
-func (f *FileSystemStore) GetLeague() []Player {
+func (f *FileSystemStore) GetLeague() ([]Player, error) {
 	var league []Player
-	json.NewDecoder(f.database).Decode(&league)
-	return league
+	league, err := NewLeague(f.database)
+	if err != nil {
+		return league, err
+	}
+	return league, nil
+}
+
+func NewLeague(data io.Reader) (league []Player, err error) {
+	if err = json.NewDecoder(data).Decode(&league); err != nil {
+		return
+	}
+	return
 }
