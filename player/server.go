@@ -44,8 +44,10 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("do leagueHandler come in ")
 	json.NewEncoder(w).Encode(p.store.GetLeague())
 	w.Header().Set("content-type", jsonContentType)
+	fmt.Println("content-type", w.Header().Get("content-type"))
 	w.WriteHeader(http.StatusOK)
 }
 
