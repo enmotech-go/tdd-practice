@@ -19,6 +19,24 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 	}
 }
 
+func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+	store := NewInMemoryPlayerStore()
+	server := NewPlayerServer(store)
+	player := "Pepper"
+
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
+
+	t.Run("get score", func(t *testing.T) {
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, newGetScoreRequest(player))
+		assertStatus(t, response.Code, http.StatusNotFound)
+
+		assertResponseBody(t, response.Body.String(), "0")
+	})
+}
+
 func TestLeague(t *testing.T) {
 
 	t.Run("it returns the league table as JSON", func(t *testing.T) {
