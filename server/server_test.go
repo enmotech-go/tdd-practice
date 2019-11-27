@@ -15,10 +15,10 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []Player
+	league   League
 }
 
-func (s *StubPlayerStore) GetLeague() []Player {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -109,7 +109,9 @@ func newPostWinRequest(name string) *http.Request {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	database,cleanDataBase := createTempFile(t,"")
+	defer cleanDataBase()
+	store := &FileSystemStore{database}
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -248,6 +250,15 @@ func TestFileSystemStore(t *testing.T) {
 		store.RecordWin("Chris")
 		got :=store.GetPlayerScore("Chris")
 		want:=34
+		assertScoreEquals(t,got,want)
+	})
+	t.Run("store wins for existing players", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, initialData)
+		defer cleanDatabase()
+		store := FileSystemStore{database}
+		store.RecordWin("Pepper")
+		got :=store.GetPlayerScore("Pepper")
+		want:=1
 		assertScoreEquals(t,got,want)
 	})
 }
