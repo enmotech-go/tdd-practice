@@ -255,7 +255,7 @@ func assertScoreEquals(t *testing.T, got, want int) {
 	}
 }
 
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := ioutil.TempFile("", "db")
