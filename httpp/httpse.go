@@ -6,12 +6,13 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 type PlayerStore interface {
 	GetPlayerScore(player string) int
 	RecordWin(name string)
-	GetLeague() []Player
+	GetLeague() League
 }
 
 type PlayerServer struct {
@@ -23,10 +24,10 @@ type PlayerServer struct {
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league []Player
+	league League
 }
 
-func (s *StubPlayerStore) GetLeague() []Player {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 
@@ -87,76 +88,66 @@ func (p *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-	return &InMemoryPlayerStore{map[string]int{}}
-}
-
-type InMemoryPlayerStore struct{
-	store map[string]int
-}
-
-func (i *InMemoryPlayerStore) GetLeague() []Player {
-	var league []Player
-	for name, wins := range i.store {
-		league = append(league, Player{name, wins})
-	}
-	return league
-}
-
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-		i.store[name]++
-		log.Println(i.store)
-}
-
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	log.Println(name,i.store)
-	return i.store[name]
-}
-
 type Player struct {
 	Name string
 	Wins int
+}
+
+type League []Player
+
+func (l League) Find(name string) *Player {
+	for i, p := range l {
+		if p.Name==name {
+			return &l[i]
+		}
+	}
+	return nil
 }
 
 type FileSystemStore struct {
 	database io.ReadWriteSeeker
 }
 
-func (f *FileSystemStore) GetLeague() []Player {
+func (f *FileSystemStore) GetLeague() League {
 	f.database.Seek(0, 0)
 	league, _ := NewLeague(f.database)
 	return league
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
-	var wins int
+	player := f.GetLeague().Find(name)
 
-	for _, player := range f.GetLeague() {
-		if player.Name == name {
-			wins = player.Wins
-			break
-		}
+	if player != nil {
+		return player.Wins
 	}
 
-	return wins
+	return 0
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
 	league := f.GetLeague()
+	player := league.Find(name)
 
-	for i, player := range league {
-		if player.Name == name {
-			league[i].Wins++
-		}
+	if player != nil {
+		player.Wins++
+	} else {
+		league = append(league, Player{name, 1})
 	}
 
-	f.database.Seek(0,0)
+	f.database.Seek(0, 0)
 	json.NewEncoder(f.database).Encode(league)
 }
+const dbFileName = "game.db.json"
 
 func main() {
-	server := NewPlayerServer(NewInMemoryPlayerStore())
+	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+
+	if err != nil {
+		log.Fatalf("problem opening %s %v", dbFileName, err)
+	}
+
+	store := &FileSystemStore{db}
+	server := NewPlayerServer(store)
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("can not server on 5000 %v" ,err)
 	}

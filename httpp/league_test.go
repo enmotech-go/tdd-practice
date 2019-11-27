@@ -14,7 +14,7 @@ import (
 )
 
 func TestLeague(t *testing.T) {
-	wantedLeague := []Player{
+	wantedLeague := League{
 		{"Cleo", 32},
 		{"Chris", 20},
 		{"Tiest", 14},
@@ -36,7 +36,7 @@ func TestLeague(t *testing.T) {
 	}
 }
 
-func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
+func getLeagueFromResponse(t *testing.T, body io.Reader) (league League) {
 	t.Helper()
 	err := json.NewDecoder(body).Decode(&league)
 
@@ -47,7 +47,7 @@ func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
 	return
 }
 
-func assertLeague(t *testing.T, got, want []Player) {
+func assertLeague(t *testing.T, got, want League) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v want %v", got, want)
@@ -60,7 +60,9 @@ func newLeagueRequest() *http.Request {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	database, cleanDatabase := createTempFile(t, "")
+	defer cleanDatabase()
+	store := &FileSystemStore{database}
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -82,7 +84,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		assert.Equal(t, http.StatusOK, response.Code)
 
 		got := getLeagueFromResponse(t, response.Body)
-		want := []Player{
+		want := League{
 			{"Pepper", 3},
 		}
 		assertLeague(t, got, want)
@@ -108,7 +110,7 @@ func TestFileSystemStore(t *testing.T) {
 		defer cleanDatabase()
 		store := FileSystemStore{database}
 		got := store.GetLeague()
-		want := []Player{
+		want := League{
 			{"Cleo", 10},
 			{"Chris", 33},
 		}
@@ -143,6 +145,21 @@ func TestFileSystemStore(t *testing.T) {
 
 		got := store.GetPlayerScore("Chris")
 		want := 34
+		assert.Equal(t, want, got)
+	})
+
+	t.Run("store wins for existing players", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+        {"Name": "Cleo", "Wins": 10},
+        {"Name": "Chris", "Wins": 33}]`)
+		defer cleanDatabase()
+
+		store := FileSystemStore{database}
+
+		store.RecordWin("Pepper")
+
+		got := store.GetPlayerScore("Pepper")
+		want := 1
 		assert.Equal(t, want, got)
 	})
 }
