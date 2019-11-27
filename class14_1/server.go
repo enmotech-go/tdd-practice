@@ -123,7 +123,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 
 type FileSystemStore struct {
-	database io.Reader
+	database io.ReadSeeker
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
@@ -136,6 +136,7 @@ func (f *FileSystemStore) RecordWin(name string) {
 
 func (f *FileSystemStore) GetLeague() ([]Player, error) {
 	var league []Player
+	f.database.Seek(0, 0)
 	league, err := NewLeague(f.database)
 	if err != nil {
 		return league, err
