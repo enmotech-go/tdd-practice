@@ -160,5 +160,8 @@ func TestFileSystemStore(t *testing.T) {
 			{"Chris", 33},
 		}
 		assert.Equal(t, want, got)
+
+		got = store.GetLeague()
+		assert.Equal(t, want, got)
 	})
 }
