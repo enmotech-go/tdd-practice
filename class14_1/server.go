@@ -127,30 +127,37 @@ type FileSystemStore struct {
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
-	var wins int
-
-	for _, player := range f.GetLeague() {
-		if player.Name == name {
-			wins = player.Wins
-		}
+	player := f.GetLeague().Find(name)
+	if player != nil {
+		return player.Wins
 	}
 
-	return wins
+	return 0
+}
+
+type League []Player
+
+func (l League) Find(name string) *Player {
+	for i, v := range l {
+		if v.Name == name {
+			return &l[i]
+		}
+	}
+	return nil
 }
 
 func (f *FileSystemStore) RecordWin(name string) {
 	league := f.GetLeague()
-	for i, v := range league {
-		if v.Name == name {
-			league[i].Wins++
-		}
+	player := league.Find(name)
+	if player != nil {
+		player.Wins++
 	}
 	f.database.Seek(0, 0)
 	json.NewEncoder(f.database).Encode(league)
 
 }
 
-func (f *FileSystemStore) GetLeague() []Player {
+func (f *FileSystemStore) GetLeague() League {
 	var league []Player
 	f.database.Seek(0, 0)
 	league, _ = NewLeague(f.database)
