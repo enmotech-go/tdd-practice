@@ -1,18 +1,36 @@
 package main
 
 import (
-	"io"
 	"io/ioutil"
 	"os"
 	"testing"
 )
 
+func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
+	t.Helper()
+
+	tmpfile, err := ioutil.TempFile("", "db")
+
+	if err != nil {
+		t.Fatalf("could not create temp file %v", err)
+	}
+
+	tmpfile.Write([]byte(initialData))
+
+	removeFile := func() {
+		tmpfile.Close()
+		os.Remove(tmpfile.Name())
+	}
+
+	return tmpfile, removeFile
+}
+
 func TestFileSystemStore(t *testing.T) {
 
 	t.Run("league from a reader", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
-            {"Name": "Cleo", "Wins": 10},
-            {"Name": "Chris", "Wins": 33}]`)
+			{"Name": "Cleo", "Wins": 10},
+			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
 		store := NewFileSystemPlayerStore(database)
@@ -33,8 +51,8 @@ func TestFileSystemStore(t *testing.T) {
 
 	t.Run("get player score", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
-            {"Name": "Cleo", "Wins": 10},
-            {"Name": "Chris", "Wins": 33}]`)
+			{"Name": "Cleo", "Wins": 10},
+			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
 		store := NewFileSystemPlayerStore(database)
@@ -58,25 +76,21 @@ func TestFileSystemStore(t *testing.T) {
 		want := 34
 		assertScoreEquals(t, got, want)
 	})
-}
 
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
-	t.Helper()
+	t.Run("store wins for new players", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+			{"Name": "Cleo", "Wins": 10},
+			{"Name": "Chris", "Wins": 33}]`)
+		defer cleanDatabase()
 
-	tmpfile, err := ioutil.TempFile("", "db")
+		store := NewFileSystemPlayerStore(database)
 
-	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
-	}
+		store.RecordWin("Pepper")
 
-	tmpfile.Write([]byte(initialData))
-
-	removeFile := func() {
-		tmpfile.Close()
-		os.Remove(tmpfile.Name())
-	}
-
-	return tmpfile, removeFile
+		got := store.GetPlayerScore("Pepper")
+		want := 1
+		assertScoreEquals(t, got, want)
+	})
 }
 
 func assertScoreEquals(t *testing.T, got, want int) {
