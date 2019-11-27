@@ -172,6 +172,7 @@ func TestFileSystemStore(t *testing.T) {
 		store := FileSystemStore{database}
 
 		got := store.GetLeague()
+		got = store.GetLeague()
 		want := []Player{
 			{"Cleo", 10},
 			{"Chris", 33},
