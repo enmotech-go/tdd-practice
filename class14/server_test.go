@@ -12,6 +12,13 @@ import (
 	"testing"
 )
 
+func assertNoError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didnt expect an error but got one, %v", err)
+	}
+}
+
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
@@ -70,10 +77,10 @@ func TestGETPlayers(t *testing.T) {
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	// store := NewInMemoryPlayerStore()
-	database, cleanDatabase := createTempFile(t, "")
+	database, cleanDatabase := createTempFile(t, `[]`)
 	defer cleanDatabase()
-	store := NewFileSystemStore(database) //{database}
-
+	store, err := NewFileSystemStore(database) //{database}
+	assertNoError(t, err)
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -191,7 +198,8 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
 
 		got := store.GetLeague()
 		want := []Player{
@@ -210,7 +218,9 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
+
 		got, _ := store.GetPlayerScore("Chris")
 		want := 33
 		if got != want {
@@ -223,7 +233,8 @@ func TestFileSystemStore(t *testing.T) {
 			{"Name": "Cleo", "Wins": 10},
 			{"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assertNoError(t, err)
 
 		store.RecordWin("Pepper")
 		got, _ := store.GetPlayerScore("Pepper")

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -17,7 +16,12 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 	// store := &FileSystemStore{db}
-	store := NewFileSystemStore(db)
+	store, err := NewFileSystemStore(db)
+	if err != nil {
+		log.Fatalf("problem creating file system player store, %v ", err)
+		return
+	}
+
 	server := NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
@@ -119,17 +123,20 @@ type Player struct {
 
 //io
 type FileSystemStore struct {
-	database io.Writer
+	database *json.Encoder
 	league   League
 }
 
-func NewFileSystemStore(database *os.File) *FileSystemStore {
+func NewFileSystemStore(database *os.File) (*FileSystemStore, error) {
 	database.Seek(0, 0)
-	league, _ := NewLeague(database)
-	return &FileSystemStore{
-		database: &tape{database},
-		league:   league,
+	league, err := NewLeague(database)
+	if err != nil {
+		return nil, err
 	}
+	return &FileSystemStore{
+		database: json.NewEncoder(&tape{database}),
+		league:   league,
+	}, nil
 }
 
 func (f *FileSystemStore) GetLeague() League {
@@ -154,5 +161,5 @@ func (f *FileSystemStore) RecordWin(name string) {
 		f.league = append(f.league, Player{name, 1})
 	}
 
-	json.NewEncoder(f.database).Encode(f.league)
+	f.database.Encode(f.league)
 }
