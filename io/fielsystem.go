@@ -34,7 +34,7 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 
 func initialisePlayerDBFile(file *os.File) error {
 	file.Seek(0, 0)
-
+	//
 	info, err := file.Stat()
 
 	if err != nil {
