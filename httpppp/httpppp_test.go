@@ -172,6 +172,12 @@ func assertResponseBody(t *testing.T, got, want string) {
 	}
 }
 
+func assertScoreEquals(t *testing.T, got, want int) {
+	if got != want {
+		t.FailNow()
+	}
+}
+
 func TestFileSystemStore(t *testing.T) {
 
 	t.Run("/league from a reader", func(t *testing.T) {
@@ -189,5 +195,17 @@ func TestFileSystemStore(t *testing.T) {
 		}
 
 		assertLeague(t, got, want)
+	})
+
+	t.Run("/get player score", func(t *testing.T) {
+		database := strings.NewReader(`[
+        {"Name": "Cleo", "Wins": 10},
+        {"Name": "Chris", "Wins": 33}]`)
+
+		store := FileSystemStore{database}
+
+		got := store.GetPlayerScore("Chris")
+		want := 33
+		assertScoreEquals(t, got, want)
 	})
 }
