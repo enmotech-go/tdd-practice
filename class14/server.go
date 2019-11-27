@@ -110,12 +110,11 @@ type Player struct {
 
 //io
 type FileSystemStore struct {
-	database io.Reader
+	database io.ReadSeeker
 }
 
 func (f *FileSystemStore) GetLeague() []Player {
-	var league []Player
-	json.NewDecoder(f.database).Decode(&league)
-	return league
-
+	f.database.Seek(0, 0)
+	result, _ := NewLeague(f.database)
+	return result
 }
