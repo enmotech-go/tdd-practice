@@ -123,7 +123,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 
 type FileSystemStore struct {
-	database io.ReadSeeker
+	database io.ReadWriteSeeker
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
