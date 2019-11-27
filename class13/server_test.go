@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"reflect"
-	"strings"
 	"testing"
 )
 
@@ -188,10 +189,14 @@ func newLeagueRequest() *http.Request {
 
 func TestFileSystemStore(t *testing.T) {
 
+	var initialData = `[
+        {"Name": "Cleo", "Wins": 10},
+        {"Name": "Chris", "Wins": 33}]`
+
 	t.Run("/league from a reader", func(t *testing.T) {
-		database := strings.NewReader(`[
-           {"Name": "Cleo", "Wins": 10},
-           {"Name": "Chris", "Wins": 33}]`)
+		database, cleanDatabase := createTempFile(t, initialData)
+
+		defer cleanDatabase()
 
 		store := FileSystemStore{database}
 
@@ -210,9 +215,9 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("get player score", func(t *testing.T) {
-		database := strings.NewReader(`[
-        {"Name": "Cleo", "Wins": 10},
-        {"Name": "Chris", "Wins": 33}]`)
+		database, cleanDatabase := createTempFile(t, initialData)
+
+		defer cleanDatabase()
 
 		store := FileSystemStore{database}
 
@@ -228,4 +233,22 @@ func assertScoreEquals(t *testing.T, got, want int) {
 	if got != want {
 		t.FailNow()
 	}
+}
+
+func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+	t.Helper()
+
+	tmpfile, err := ioutil.TempFile("", "db")
+
+	if err != nil {
+		t.Fatalf("could not create temp file %v", err)
+	}
+
+	tmpfile.Write([]byte(initialData))
+
+	removeFile := func() {
+		os.Remove(tmpfile.Name())
+	}
+
+	return tmpfile, removeFile
 }
