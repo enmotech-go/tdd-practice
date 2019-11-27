@@ -11,12 +11,13 @@ type ReadSeeker interface {
 	Seeker
 }
 type Reader interface {
-	Read(p []byte)(n int,err error)
+	Read(p []byte) (n int, err error)
 }
 type Seeker interface {
-	Seek(offset int64,whence int)(int64,error)
+	Seek(offset int64, whence int) (int64, error)
 }
-func NewLeague(rdr io.Reader)([]Player,error)  {
+
+func NewLeague(rdr io.Reader) ([]Player, error) {
 	var league []Player
 	err := json.NewDecoder(rdr).Decode(&league)
 	if err != nil {
@@ -26,3 +27,13 @@ func NewLeague(rdr io.Reader)([]Player,error)  {
 	return league, err
 }
 
+func (f *FileSystemStore) GetPlayerScore(name string) int {
+	var wins int
+	for _,player := range f.GetLeague(){
+		if player.Name==name{
+			wins = player.Wins
+			break
+		}
+	}
+	return wins
+}

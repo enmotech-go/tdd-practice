@@ -19,7 +19,7 @@ type PlayerServer struct {
 	http.Handler
 }
 type FileSystemStore struct {
-	database io.ReadSeeker
+	database io.ReadWriteSeeker
 }
 
 func (f *FileSystemStore)GetLeague()[]Player  {
@@ -27,6 +27,7 @@ func (f *FileSystemStore)GetLeague()[]Player  {
 	league ,_:=NewLeague(f.database)
 	return league
 }
+
 
 func NewPlayerServer(store PlayerStore) *PlayerServer  {
 	p :=new(PlayerServer)
