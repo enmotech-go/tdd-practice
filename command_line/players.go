@@ -1,4 +1,4 @@
-package main
+package command_line
 
 import (
 	"encoding/json"
@@ -106,25 +106,7 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 //     return
 // }
 
-// 存根
-type StubPlayerStore struct {
-	scores   map[string]int
-	winCalls []string // 监视收集
-	league   []Player
-}
 
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
-	return score
-}
-
-func (s *StubPlayerStore) RecordWin(name string) {
-	s.winCalls = append(s.winCalls, name)
-}
-
-func (s *StubPlayerStore) GetLeague() League {
-	return s.league
-}
 
 type Player struct {
 	Name string

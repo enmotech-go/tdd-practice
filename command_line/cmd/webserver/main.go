@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	// "os"
+	poker "enmotech-go/tdd-practice/command_line"
 )
 
 /**
@@ -30,17 +31,20 @@ const dbFileName = "game.db.json"
 func http_svr() {
 	fmt.Println("hi http_svr")
 	// server := NewPlayerServer(NewInMemoryPlayerStore())
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	// db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	// if err != nil {
+	// 	log.Fatalf("problem opening %s, err: %v", dbFileName, err)
+	// }
+	// // store := &FileSystemStore{db}
+	// store, err := poker.NewFileSystemStore(db)
+	// if err != nil {
+	// 	log.Fatalf("problem creating file system player store, %v", err)
+	// }
+	store,err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 	if err != nil {
-		log.Fatalf("problem opening %s, err: %v", dbFileName, err)
+		log.Fatal(err)
 	}
-	// store := &FileSystemStore{db}
-	store, err := NewFileSystemStore(db)
-	if err != nil {
-		log.Fatalf("problem creating file system player store, %v", err)
-	}
-
-	server := NewPlayerServer(store)
+	server := poker.NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("listen on 5000 is failed, %v", err)
