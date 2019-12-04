@@ -15,10 +15,13 @@ func initialisePlayerDBFile(file *os.File) error {
 	if err != nil {
 		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
 	}
+
+
 	if info.Size() == 0 {
 		file.Write([]byte("[]"))
 		file.Seek(0, 0)
 	}
+
 	return nil
 }
 
