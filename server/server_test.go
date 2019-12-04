@@ -64,9 +64,10 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	database, cleanDatabase := createTempFile(t, "")
+	database, cleanDatabase := createTempFile(t, `[]`)
 	defer cleanDatabase()
-	store := NewFileSystemStore(database)
+	store, err := NewFileSystemStore(database)
+	assert.NoError(t, err)
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -89,6 +90,12 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 			{"Pepper", 3},
 		}
 		assert.Equal(t, want, got)
+	})
+	t.Run("works_with_an_empty_file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
+		_, err := NewFileSystemStore(database)
+		assert.NoError(t, err)
 	})
 }
 
@@ -162,7 +169,8 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assert.NoError(t, err)
 		got := store.GetLeague()
 		want := League{
 			{"Cleo", 10},
@@ -177,7 +185,8 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assert.NoError(t, err)
 		got := store.GetPlayerScore("Chris")
 		want := 33
 		assert.Equal(t, want, got)
@@ -186,7 +195,8 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assert.NoError(t, err)
 		store.RecordWin("Chris")
 		got := store.GetPlayerScore("Chris")
 		want := 34
@@ -196,7 +206,8 @@ func TestFileSystemStore(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, initialData)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		assert.NoError(t, err)
 		store.RecordWin("Pepper")
 		got := store.GetPlayerScore("Pepper")
 		want := 1
