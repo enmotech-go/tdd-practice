@@ -18,6 +18,7 @@ type Player struct {
 	Wins int
 }
 
+//
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
 	score := s.scores[name]
 	return score
