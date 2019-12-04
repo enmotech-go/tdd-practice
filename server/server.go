@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sort"
 )
 
 type PlayerStore interface {
@@ -26,16 +27,26 @@ type FileSystemStore struct {
 	league League
 }
 
-func NewFileSystemStore(file *os.File)  (*FileSystemStore, error){
+func initialisePlayerDBFile(file *os.File) error  {
 	file.Seek(0, 0)
 
 	info ,err := file.Stat()
 	if err!=nil{
-		return nil,fmt.Errorf("problem getting file info from file %s, %v",file.Name(),err)
+		return fmt.Errorf("problem getting file info from file %s, %v",file.Name(),err)
 	}
 	if info.Size()==0{
 		file.Write([]byte("[]"))
 		file.Seek(0,0)
+	}
+	return nil
+}
+
+
+
+func NewFileSystemStore(file *os.File)  (*FileSystemStore, error){
+	err := initialisePlayerDBFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem initialising player db file, %v", err)
 	}
 	league, err := NewLeague(file)
 	if err!=nil{
@@ -48,7 +59,9 @@ func NewFileSystemStore(file *os.File)  (*FileSystemStore, error){
 }
 
 func (f *FileSystemStore) GetLeague() League {
-
+	sort.Slice(f.league, func(i, j int) bool {
+		return f.league[i].Wins > f.league[j].Wins
+	})
 	return f.league
 }
 
@@ -103,27 +116,3 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 	p.store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
 }
-//
-//func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-//	return &InMemoryPlayerStore{map[string]int{}}
-//}
-//
-//type InMemoryPlayerStore struct {
-//	store map[string]int
-//}
-//
-//func (i *InMemoryPlayerStore) GetLeague() []Player {
-//	var league []Player
-//	for name, wins := range i.store {
-//		league = append(league, Player{name, wins})
-//	}
-//	return league
-//}
-//
-//func (i *InMemoryPlayerStore) RecordWin(name string) {
-//	i.store[name]++
-//}
-//
-//func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
-//	return i.store[name]
-//}
