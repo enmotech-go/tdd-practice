@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 type PlayerStore interface {
@@ -148,18 +149,12 @@ type FileSystemStore struct {
 }
 
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemStore, error) {
-	file.Seek(0, 0)
-	info, err := file.Stat()
 
+	err := initialisePlayerDBFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
-	}
 
-	if info.Size() == 0 {
-		file.Write([]byte("[]"))
-		file.Seek(0, 0)
 	}
-
 	league, err := NewLeague(file)
 
 	return &FileSystemStore{
@@ -168,7 +163,26 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemStore, error) {
 	}, nil
 }
 
+func initialisePlayerDBFile(file *os.File) error {
+	file.Seek(0, 0)
+	info, err := file.Stat()
+
+	if err != nil {
+		return fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, 0)
+	}
+
+	return nil
+}
+
 func (f FileSystemStore) GetLeague() League {
+	sort.Slice(f.league, func(i, j int) bool {
+		return f.league[i].Wins > f.league[j].Wins
+	})
 	return f.league
 }
 
