@@ -44,7 +44,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
-	store := NewFileSystemStore(db)
+	store, err := NewFileSystemStore(db)
+	if err != nil {
+		log.Fatalf("problem creating file system player store, %v ", err)
+	}
 	server := NewPlayerServer(store)
 	if err := http.ListenAndServe(":15000", server); err != nil {
 		log.Fatal("could not listen on port 5000 ", err)
@@ -136,11 +139,29 @@ type FileSystemStore struct {
 	league   League
 }
 
-func NewFileSystemStore(file *os.File) *FileSystemStore {
-	file.Seek(0, 0)
-	league, _ := NewLeague(file)
+func NewFileSystemStore(file *os.File) (*FileSystemStore, error) {
+	err := initialisePlayerDBFile(file)
+	if err != nil {
+		return nil, err
+	}
+	league, err := NewLeague(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
+	return &FileSystemStore{database: json.NewEncoder(&tape{file: file}), league: league}, nil
+}
 
-	return &FileSystemStore{database: json.NewEncoder(&tape{file: file}), league: league}
+func initialisePlayerDBFile(file *os.File) error {
+	file.Seek(0, 0)
+	info, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, 0)
+	}
+	return nil
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
