@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -14,7 +13,10 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Errorf("want got nil but got %v", err)
+		}
 
 		got := store.GetLeague()
 
@@ -35,7 +37,10 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Errorf("want got nil but got %v", err)
+		}
 
 		got := store.GetPlayerScore("Chris")
 
@@ -50,7 +55,10 @@ func TestFileSystemStore(t *testing.T) {
         {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Errorf("want got nil but got %v", err)
+		}
 
 		store.RecordWin("Chris")
 
@@ -65,7 +73,10 @@ func TestFileSystemStore(t *testing.T) {
         {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Errorf("want got nil but got %v", err)
+		}
 
 		store.RecordWin("Pepper")
 
@@ -75,7 +86,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 }
 
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := ioutil.TempFile("", "db")

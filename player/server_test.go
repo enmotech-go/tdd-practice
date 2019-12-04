@@ -122,6 +122,16 @@ func TestLeague(t *testing.T) {
 	})
 }
 
+func TestRecordingWinsAndRetrievingThem(t *testing.T) {
+	t.Run("works with an empty file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
+
+		_, err := NewFileSystemStore(database)
+		assertNoError(t, err)
+	})
+}
+
 func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want string) {
 	t.Helper()
 	if response.Result().Header.Get("content-type") != want {
@@ -173,5 +183,12 @@ func assertResponseBody(t *testing.T, got, want string) {
 	t.Helper()
 	if got != want {
 		t.Errorf("response body is wrong, got %q want %q", got, want)
+	}
+}
+
+func assertNoError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didnt expect an error but got one, %v", err)
 	}
 }
