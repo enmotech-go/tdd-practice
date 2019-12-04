@@ -4,15 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 )
 
 type FileSystemStore struct {
 	database *json.Encoder
 	league   League
-}
-
-func (f *FileSystemStore) GetLeague() League {
-	return f.league
 }
 
 func (f *FileSystemStore) GetPlayerScore(name string) int {
@@ -72,4 +69,11 @@ func initialisePlayerDBFile(file *os.File) error {
 	}
 
 	return nil
+}
+
+func (f *FileSystemStore) GetLeague() League {
+	sort.Slice(f.league, func(i, j int) bool {
+		return f.league[i].Wins > f.league[j].Wins
+	})
+	return f.league
 }
