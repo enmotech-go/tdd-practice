@@ -20,7 +20,7 @@ func TestLeague(t *testing.T) {
 		{"Tiest", 14},
 	}
 
-	store := StubPlayerStore{nil, nil, wantedLeague,}
+	store := StubPlayerStore{nil, nil, wantedLeague}
 	server := NewPlayerServer(&store)
 
 	request := newLeagueRequest()
@@ -60,9 +60,12 @@ func newLeagueRequest() *http.Request {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	database, cleanDatabase := createTempFile(t, "")
+	database, cleanDatabase := createTempFile(t, "[]")
 	defer cleanDatabase()
-	store := NewFileSystemStore(database)
+	store, err := NewFileSystemStore(database)
+	if err != nil {
+		t.Fatalf("NewFileSystemStore err.%v", err)
+	}
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -101,14 +104,16 @@ func newGetScoreRequest(name string) *http.Request {
 	return req
 }
 
-
 func TestFileSystemStore(t *testing.T) {
 	t.Run("/league from a reader", func(t *testing.T) {
 		database, cleanDatabase := createTempFile(t, `[
             {"Name": "Cleo", "Wins": 10},
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Fatalf("NewFileSystemStore err.%v", err)
+		}
 		got := store.GetLeague()
 		want := League{
 			{"Cleo", 10},
@@ -125,8 +130,10 @@ func TestFileSystemStore(t *testing.T) {
             {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
-
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Fatalf("NewFileSystemStore err.%v", err)
+		}
 		got := store.GetPlayerScore("Chris")
 
 		want := 33
@@ -139,8 +146,10 @@ func TestFileSystemStore(t *testing.T) {
         {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
-
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Fatalf("NewFileSystemStore err.%v", err)
+		}
 		store.RecordWin("Chris")
 
 		got := store.GetPlayerScore("Chris")
@@ -154,12 +163,50 @@ func TestFileSystemStore(t *testing.T) {
         {"Name": "Chris", "Wins": 33}]`)
 		defer cleanDatabase()
 
-		store := NewFileSystemStore(database)
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Fatalf("problem creating file system player store, %v ", err)
+		}
 
 		store.RecordWin("Pepper")
 
 		got := store.GetPlayerScore("Pepper")
 		want := 1
+		assert.Equal(t, want, got)
+	})
+
+	t.Run("works with an empty file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
+
+		_, err := NewFileSystemStore(database)
+
+		assert.Nil(t, err)
+	})
+
+	t.Run("league sorted", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, `[
+        {"Name": "Cleo", "Wins": 10},
+        {"Name": "Chris", "Wins": 33}]`)
+		defer cleanDatabase()
+
+		store, err := NewFileSystemStore(database)
+		if err != nil {
+			t.Fatalf("problem creating file system player store, %v ", err)
+		}
+		got := store.GetLeague()
+		assert.Nil(t, err)
+
+		want := League{
+			{"Chris", 33},
+			{"Cleo", 10},
+		}
+
+		assert.Equal(t, want, got)
+
+		// read again
+		got = store.GetLeague()
+		assert.Nil(t, err)
 		assert.Equal(t, want, got)
 	})
 }
@@ -181,7 +228,6 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 
 	return tmpfile, removeFile
 }
-
 
 func TestTape_Write(t *testing.T) {
 	file, clean := createTempFile(t, "12345")

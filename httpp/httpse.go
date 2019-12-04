@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 )
 
 type PlayerStore interface {
@@ -19,17 +20,15 @@ type PlayerServer struct {
 	http.Handler
 }
 
-
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league League
+	league   League
 }
 
 func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
-
 
 func (s StubPlayerStore) GetPlayerScore(name string) int {
 	score := s.scores[name]
@@ -53,8 +52,6 @@ func (p *PlayerServer) ShowScore(w http.ResponseWriter, player string) {
 	}
 	fmt.Fprint(w, score)
 }
-
-
 
 func NewPlayerServer(store PlayerStore) *PlayerServer {
 	p := new(PlayerServer)
@@ -96,7 +93,7 @@ type League []Player
 
 func (l League) Find(name string) *Player {
 	for i, p := range l {
-		if p.Name==name {
+		if p.Name == name {
 			return &l[i]
 		}
 	}
@@ -105,19 +102,45 @@ func (l League) Find(name string) *Player {
 
 type FileSystemStore struct {
 	database *json.Encoder
-	league League
+	league   League
 }
 
-func NewFileSystemStore(file *os.File) *FileSystemStore {
+func initialisePlayerDBFile(file *os.File) error {
 	file.Seek(0, 0)
-	league, _ := NewLeague(file)
+
+	info, err := file.Stat()
+
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, 0)
+	}
+
+	return nil
+}
+
+func NewFileSystemStore(file *os.File) (*FileSystemStore, error) {
+	err := initialisePlayerDBFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
+	league, err := NewLeague(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
 	return &FileSystemStore{
 		database: json.NewEncoder(&tape{file}),
-		league:league,
-	}
+		league:   league,
+	}, nil
 }
 
 func (f *FileSystemStore) GetLeague() League {
+	sort.Slice(f.league, func(i, j int) bool {
+		return f.league[i].Wins > f.league[j].Wins
+	})
 	return f.league
 }
 
@@ -160,9 +183,12 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store := NewFileSystemStore(db)
+	store, err := NewFileSystemStore(db)
+	if err != nil {
+		log.Fatalf("problem opening %s %v", dbFileName, err)
+	}
 	server := NewPlayerServer(store)
 	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("can not server on 5000 %v" ,err)
+		log.Fatalf("can not server on 5000 %v", err)
 	}
 }
