@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"reflect"
 	"testing"
 )
@@ -15,7 +13,7 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []Player
+	league   League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -27,7 +25,7 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
-func (s *StubPlayerStore) GetLeague() []Player {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 
@@ -132,7 +130,12 @@ func TestLeague(t *testing.T) {
 }
 
 func TestUnit(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	database, cleanDatabase := createTempFile(t, "")
+	defer cleanDatabase()
+
+	store, err := NewFileSystemPlayerStore(database)
+	assertNoError(t, err)
+
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -156,94 +159,13 @@ func TestUnit(t *testing.T) {
 		want := []Player{{"Pepper", 3}}
 		assertLeague(t, got, want)
 	})
-
-	response := httptest.NewRecorder()
-	server.ServeHTTP(response, newGetScoreRequest(player))
-
-	assertResponseStatus(t, response.Code, http.StatusOK)
-	assertResponseBody(t, response.Body.String(), "3")
 }
 
-func TestFileSystemStore(t *testing.T) {
-	t.Run("/league from a reader", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
-			{"Name":"Cleo", "Wins":10},
-			{"Name":"Chris", "Wins":33}]`)
-		defer cleanDatabase()
-
-		store := FileSystemStore{database}
-
-		got := store.GetLeague()
-		want := []Player{
-			{"Cleo", 10},
-			{"Chris", 33},
-		}
-
-		assertLeague(t, got, want)
-
-		// read again
-		got = store.GetLeague()
-		assertLeague(t, got, want)
-	})
-
-	t.Run("get player score", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
-			{"Name":"Cleo", "Wins":10},
-			{"Name":"Chris", "Wins":33}]`)
-		defer cleanDatabase()
-
-		store := FileSystemStore{database}
-
-		got := store.GetPlayerScore("Chris")
-		want := 33
-		assertScoreEquals(t, got, want)
-	})
-
-	t.Run("store wins for existing players", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
-			{"Name":"Cleo", "Wins":10},
-			{"Name":"Chris", "Wins":33}]`)
-		defer cleanDatabase()
-
-		store := FileSystemStore{database}
-		store.RecordWin("Chris")
-
-		got := store.GetPlayerScore("Chris")
-		want := 34
-		assertScoreEquals(t, got, want)
-	})
-
-	t.Run("store wins for not exist players", func(t *testing.T) {
-		database, cleanDatabase := createTempFile(t, `[
-			{"Name":"Cleo", "Wins":10},
-			{"Name":"Chris", "Wins":33}]`)
-		defer cleanDatabase()
-
-		store := FileSystemStore{database}
-		store.RecordWin("Pepper")
-
-		got := store.GetPlayerScore("Pepper")
-		want := 1
-		assertScoreEquals(t, got, want)
-	})
-}
-
-func createTempFile(t *testing.T, initialData string) (io.ReadWriteSeeker, func()) {
+func assertNoError(t *testing.T, err error) {
 	t.Helper()
-
-	tmpfile, err := ioutil.TempFile("", "db")
-
 	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
+		t.Fatalf("didnt expect an error but got one, %v", err)
 	}
-
-	tmpfile.Write([]byte(initialData))
-
-	removeFile := func() {
-		os.Remove(tmpfile.Name())
-	}
-
-	return tmpfile, removeFile
 }
 
 func assertScoreEquals(t *testing.T, got, want int) {
