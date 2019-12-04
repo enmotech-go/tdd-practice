@@ -173,8 +173,8 @@ func TestFileSystemStore(t *testing.T) {
 		assert.NoError(t, err)
 		got := store.GetLeague()
 		want := League{
-			{"Cleo", 10},
 			{"Chris", 33},
+			{"Cleo", 10},
 		}
 		assert.Equal(t, want, got)
 
