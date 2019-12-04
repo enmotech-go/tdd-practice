@@ -16,11 +16,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
-	// store := &FileSystemStore{db}
 	store, err := NewFileSystemStore(db)
 	if err != nil {
 		log.Fatalf("problem creating file system player store, %v ", err)
-		return
 	}
 
 	server := NewPlayerServer(store)
@@ -28,32 +26,6 @@ func main() {
 	if err := http.ListenAndServe(":5000", server); err != nil {
 		log.Fatalf("could not listen on port 5000 %v", err)
 	}
-}
-
-func NewInMemoryPlayerStore() *InMemoryPlayerStore {
-	return &InMemoryPlayerStore{map[string]int{}}
-}
-
-type InMemoryPlayerStore struct {
-	store map[string]int
-}
-
-func (i *InMemoryPlayerStore) RecordWin(name string) {
-	i.store[name]++
-}
-
-func (i *InMemoryPlayerStore) GetPlayerScore(name string) (int, bool) {
-	s, ok := i.store[name]
-
-	return s, ok
-}
-func (i *InMemoryPlayerStore) GetLeague() League {
-	var league []Player
-	for name, wins := range i.store {
-		league = append(league, Player{name, wins})
-	}
-	return league
-
 }
 
 type PlayerStore interface {
@@ -82,7 +54,9 @@ func NewPlayerServer(store PlayerStore) *PlayerServer {
 //json
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	json.NewEncoder(w).Encode(p.store.GetLeague())
+	if err := json.NewEncoder(w).Encode(p.store.GetLeague()); err != nil {
+		log.Println("leagueHandler Encode with err", err)
+	}
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -143,14 +117,23 @@ func NewFileSystemStore(file *os.File) (*FileSystemStore, error) {
 	}, nil
 }
 func initialisePlayerDBFile(file *os.File) error {
-	file.Seek(0, 0)
+	_, err := file.Seek(0, 0)
+	if err != nil {
+		return err
+	}
 	info, err := file.Stat()
 	if err != nil {
 		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
 	}
 	if info.Size() == 0 {
-		file.Write([]byte("[]"))
-		file.Seek(0, 0)
+		_, err = file.Write([]byte("[]"))
+		if err != nil {
+			return err
+		}
+		_, err = file.Seek(0, 0)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -180,5 +163,7 @@ func (f *FileSystemStore) RecordWin(name string) {
 		f.league = append(f.league, Player{name, 1})
 	}
 
-	f.database.Encode(f.league)
+	if err := f.database.Encode(f.league); err != nil {
+		log.Println("RecordWin  encode with err", err)
+	}
 }

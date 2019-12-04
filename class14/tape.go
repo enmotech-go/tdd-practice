@@ -7,7 +7,13 @@ type tape struct {
 }
 
 func (t *tape) Write(p []byte) (n int, err error) {
-	t.file.Truncate(0)
-	t.file.Seek(0, 0)
+	err = t.file.Truncate(0)
+	if err != nil {
+		return
+	}
+	_, err = t.file.Seek(0, 0)
+	if err != nil {
+		return
+	}
 	return t.file.Write(p)
 }

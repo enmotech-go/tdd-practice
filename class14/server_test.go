@@ -10,6 +10,8 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func assertNoError(t *testing.T, err error) {
@@ -281,7 +283,8 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	if err != nil {
 		t.Fatalf("could not create temp file %v", err)
 	}
-	tmpfile.Write([]byte(initialData))
+	_, err = tmpfile.Write([]byte(initialData))
+	assert.NoError(t, err)
 	removeFile := func() {
 		os.Remove(tmpfile.Name())
 	}
