@@ -1,6 +1,11 @@
 package main
 
-import "net/http"
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+)
 
 type InMemoryPlayerStore struct {
 	store map[string]int
@@ -26,8 +31,21 @@ func (i *InMemoryPlayerStore) GetLeague() []Player {
 	return league
 }
 
+const dbFileName = "game.db.json"
+
 func main() {
-	server := NewPlayerServer(NewInMemoryPlayerStore())
+	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+
+	if err != nil {
+		log.Fatalf("problem opening %s %v", dbFileName, err)
+	}
+
+	store, err := NewFileSystemStore(db)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	server := NewPlayerServer(store)
 	if err := http.ListenAndServe(":5000", http.HandlerFunc(server.ServeHTTP)); err != nil {
 		return
 	}

@@ -101,7 +101,14 @@ func newPostWinRequest(name string) *http.Request {
 }
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
-	store := NewInMemoryPlayerStore()
+	//store := NewInMemoryPlayerStore()
+	database, cleanDatabase := createTempFile(t, "[]")
+	defer cleanDatabase()
+	store, err := NewFileSystemStore(database)
+	if err != nil {
+		t.Error(err.Error())
+		t.FailNow()
+	}
 	server := NewPlayerServer(store)
 	player := "Pepper"
 
@@ -128,6 +135,22 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		}
 		assertLeague(t, got, want)
 	})
+
+	t.Run("works with an empty file", func(t *testing.T) {
+		database, cleanDatabase := createTempFile(t, "")
+		defer cleanDatabase()
+
+		_, err := NewFileSystemStore(database)
+
+		assertNoError(t, err)
+	})
+}
+
+func assertNoError(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatalf("didnt expect an error but got one, %v", err)
+	}
 }
 
 func TestLeague(t *testing.T) {
