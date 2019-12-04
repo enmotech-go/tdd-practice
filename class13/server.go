@@ -58,7 +58,10 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store := NewFileSystemPlayerStore(db)
+	store, err := NewFileSystemPlayerStore(db)
+	if err != nil {
+		log.Fatalf("problem creating file system player store, %v ", err)
+	}
 
 	server := NewPlayerServer(store)
 
@@ -144,13 +147,25 @@ type FileSystemStore struct {
 	league   League
 }
 
-func NewFileSystemPlayerStore(database *os.File) *FileSystemStore {
-	database.Seek(0, 0)
-	league, _ := NewLeague(database)
-	return &FileSystemStore{
-		database: json.NewEncoder(&tape{database}),
-		league:   league,
+func NewFileSystemPlayerStore(file *os.File) (*FileSystemStore, error) {
+	file.Seek(0, 0)
+	info, err := file.Stat()
+
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
 	}
+
+	if info.Size() == 0 {
+		file.Write([]byte("[]"))
+		file.Seek(0, 0)
+	}
+
+	league, err := NewLeague(file)
+
+	return &FileSystemStore{
+		database: json.NewEncoder(&tape{file}),
+		league:   league,
+	}, nil
 }
 
 func (f FileSystemStore) GetLeague() League {
