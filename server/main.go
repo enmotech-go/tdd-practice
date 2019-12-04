@@ -1,12 +1,53 @@
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
 )
 
 const dbFileName = "game.db.json"
+
+type PlayerStore interface {
+	GetPlayerScore(name string) int
+	RecordWin(name string)
+	GetLeague() League
+}
+type ReadWriteSeekTruncate interface {
+	io.ReadWriteSeeker
+	Truncate(size int64) error
+}
+type PlayerServer struct {
+	store PlayerStore
+	http.Handler
+}
+type FileSystemStore struct {
+	database *json.Encoder
+	league League
+}
+
+type ReadSeeker interface {
+	Reader
+	Seeker
+}
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+type Seeker interface {
+	Seek(offset int64, whence int) (int64, error)
+}
+type League []Player
+
+func (l League) Find(name string) *Player {
+	for i, p := range l {
+		if p.Name == name {
+			return &l[i]
+		}
+	}
+	return nil
+}
 
 func main() {
 	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
