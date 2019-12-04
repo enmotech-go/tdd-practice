@@ -110,6 +110,13 @@ func TestFileSystemStore(t *testing.T) {
 	})
 }
 
+func assertScoreEquals(t *testing.T, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
+	}
+}
+
 func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	t.Helper()
 
@@ -126,11 +133,4 @@ func createTempFile(t *testing.T, initialData string) (*os.File, func()) {
 	}
 
 	return tmpfile, removeFile
-}
-
-func assertScoreEquals(t *testing.T, got, want int) {
-	t.Helper()
-	if got != want {
-		t.Errorf("got %d want %d", got, want)
-	}
 }
