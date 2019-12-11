@@ -19,6 +19,7 @@ func TestCLI(t *testing.T) {
 		cli.PlayPoker()
 		poker.AssertPlayerWin(t, playerStore, "Chris")
 	})
+
 	t.Run("record cleo win from user input", func(t *testing.T) {
 		in := strings.NewReader("Cleo wins\n")
 		playerStore := &poker.StubPlayerStore{}
