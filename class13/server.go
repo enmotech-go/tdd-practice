@@ -1,9 +1,8 @@
-package main
+package poker
 
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"sort"
@@ -48,27 +47,6 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 
 func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
-}
-
-const dbFileName = "game.db.json"
-
-func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
-
-	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
-	}
-
-	store, err := NewFileSystemPlayerStore(db)
-	if err != nil {
-		log.Fatalf("problem creating file system player store, %v ", err)
-	}
-
-	server := NewPlayerServer(store)
-
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("could not listen on port 5000 %v", err)
-	}
 }
 
 func newPostWinRequest(name string) *http.Request {
