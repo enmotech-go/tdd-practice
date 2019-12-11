@@ -1,19 +1,20 @@
-package command_line
+package poker_test
 
 import (
 	"testing"
 	"strings"
 	"io"
-	// poker "enmotech-go/tdd-practice/command_line"
+	poker "enmotech-go/tdd-practice/command_line"
 
 )
 
 func TestCLI(t *testing.T)  {
 	t.Run("record chris win from user input", func (t *testing.T)  {
 		in := strings.NewReader("Chris wins\n")
-		playerStore := &StubPlayerStore{}
+		playerStore := &poker.StubPlayerStore{}
 		// playerStore := &poker.StubPlayerStore{}
-		cli := &CLI{playerStore, in}
+		// cli := &poker.CLI{playerStore, in}
+		cli := poker.NewCLI(playerStore, in)
 		cli.PlayPoker()
 
 		// if len(playerStore.winCalls) < 1 {
@@ -25,17 +26,18 @@ func TestCLI(t *testing.T)  {
 		// assertResponseBody(t, got, want)
 
 		// assertPlayerWin(t, playerStore, want)
-		AssertPlayerWin(t, playerStore, want)
+		poker.AssertPlayerWin(t, playerStore, want)
 	})
 
 	t.Run("record cleo win from user input", func (t *testing.T)  {
 		in := strings.NewReader("Cleo wins\n")
-		playerStore := &StubPlayerStore{}
-		cli := &CLI{playerStore, in}
+		playerStore := &poker.StubPlayerStore{}
+		// cli := &poker.CLI{playerStore, in}
+		cli := poker.NewCLI(playerStore, in)
 		cli.PlayPoker()
 		want := "Cleo"
 		// assertPlayerWin(t, playerStore, want)
-		AssertPlayerWin(t, playerStore, want)
+		poker.AssertPlayerWin(t, playerStore, want)
 
 	})
 
@@ -43,8 +45,8 @@ func TestCLI(t *testing.T)  {
 		in := failOnEndReader{
 			t, strings.NewReader("Chris wins\n hello there"),
 		}
-		playerStore := &StubPlayerStore{}
-		cli := NewCLI(playerStore, in)
+		playerStore := &poker.StubPlayerStore{}
+		cli := poker.NewCLI(playerStore, in)
 		cli.PlayPoker()
 	})
 }
@@ -63,14 +65,14 @@ func (m failOnEndReader) Read(p []byte) (n int, err error)  {
 	return n,err
 }
 
-func assertPlayerWin(t *testing.T, store *StubPlayerStore, winner string)  {
-	t.Helper()
-	if len(store.winCalls) != 1 {
-		t.Fatalf("got is %d, calls to RecordWin want is %d", len(store.winCalls), 1)
-	}
-	if store.winCalls[0] != winner {
-		t.Errorf("did not store correct winner got is '%s', want is '%s'", store.winCalls[0], winner)
+// func assertPlayerWin(t *testing.T, store *poker.StubPlayerStore, winner string)  {
+// 	t.Helper()
+// 	if len(store.winCalls) != 1 {
+// 		t.Fatalf("got is %d, calls to RecordWin want is %d", len(store.winCalls), 1)
+// 	}
+// 	if store.winCalls[0] != winner {
+// 		t.Errorf("did not store correct winner got is '%s', want is '%s'", store.winCalls[0], winner)
 		
-	}
+// 	}
 
-}
+// }

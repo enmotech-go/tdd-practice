@@ -1,4 +1,4 @@
-package command_line
+package poker
 
 type InMemoryPlayerStore struct {
 	store map[string]int

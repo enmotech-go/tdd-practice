@@ -23,8 +23,6 @@ demand: 新增/league端点，返回玩家清单。
 . 使用sort.Slice对切片排序
 . 利用编辑器安全对应用程序结构更改
 
-
-Tips: 下次课件从错误处理继续
 */
 const dbFileName = "game.db.json"
 
@@ -40,10 +38,12 @@ func http_svr() {
 	// if err != nil {
 	// 	log.Fatalf("problem creating file system player store, %v", err)
 	// }
-	store,err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+	store, fClose, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fClose()
+
 	server := poker.NewPlayerServer(store)
 
 	if err := http.ListenAndServe(":5000", server); err != nil {

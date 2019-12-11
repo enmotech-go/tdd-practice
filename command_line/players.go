@@ -1,4 +1,4 @@
-package command_line
+package poker
 
 import (
 	"encoding/json"

@@ -7,14 +7,15 @@ import (
 	poker "enmotech-go/tdd-practice/command_line"
 )
 
-const dbFileName = "game.db.json"
+const dbFileName = "../game.db.json"
 
 func main()  {
-	store,err := poker.FileSystemPlayerStoreFromFile(dbFileName)
+	store, fClose, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	fClose()
+	
 	fmt.Println("Let's play poker!")
 	fmt.Println("Type {Name} wins to record a win")
 
@@ -22,11 +23,12 @@ func main()  {
 	// if err != nil {
 	// 	log.Fatalf("problem opening %s %v", dbFileName, err)
 	// }
-	// store, err := poker.NewFileSystemStore(db)
+	// store, err = poker.NewFileSystemStore(db)
 	// if err != nil {
 	// 	log.Fatalf("problem creating file system player store, %v", err)
 	// }
 
-	game := poker.CLI{store, os.Stdin,}
+	// game := poker.CLI{store, os.Stdin,}
+	game := poker.NewCLI(store, os.Stdin)
 	game.PlayPoker()
 }

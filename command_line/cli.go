@@ -1,4 +1,4 @@
-package command_line
+package poker
 import (
 	"io"
 	"bufio"
@@ -37,16 +37,20 @@ func extractWinner(userInput string) string  {
 	return strings.Replace(userInput, " wins", "", 1)
 }
 
-func FileSystemPlayerStoreFromFile(path string) (*FileSystemStore, error)  {
+func FileSystemPlayerStoreFromFile(path string) (*FileSystemStore, func(), error)  {
 	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
-		return nil, fmt.Errorf("problem opening %s %v", path, err)
+		return nil, nil, fmt.Errorf("problem opening %s %v", path, err)
+	}
+
+	closeFunc := func ()  {
+		db.Close()
 	}
 	store, err := NewFileSystemStore(db)
 	if err != nil {
-		return nil, fmt.Errorf("problem creating file system player store, %v", err)
+		return nil, nil, fmt.Errorf("problem creating file system player store, %v", err)
 
 	}
 
-	return store, nil
+	return store, closeFunc, nil
 }

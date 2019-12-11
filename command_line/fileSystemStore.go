@@ -1,4 +1,4 @@
-package command_line
+package poker
 
 import (
 	"encoding/json"
@@ -124,7 +124,7 @@ func (t *tape) Write(p []byte) (n int, err error) {
 	return t.file.Write(p)
 }
 
-type ReaWriteSeekTruncate interface {
+type ReadWriteSeekTruncate interface {
 	io.ReadWriteSeeker
 	Truncate(size int64) error
 }
