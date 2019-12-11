@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	"encoding/json"
@@ -173,23 +173,4 @@ func (t *tape) Write(p []byte) (n int, err error) {
 	t.file.Truncate(0)
 	t.file.Seek(0, 0)
 	return t.file.Write(p)
-}
-
-const dbFileName = "game.db.json"
-
-func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
-
-	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
-	}
-
-	store, err := NewFileSystemStore(db)
-	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
-	}
-	server := NewPlayerServer(store)
-	if err := http.ListenAndServe(":5000", server); err != nil {
-		log.Fatalf("can not server on 5000 %v", err)
-	}
 }
