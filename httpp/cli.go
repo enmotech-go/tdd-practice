@@ -2,7 +2,9 @@ package poker
 
 import (
 	"bufio"
+	"fmt"
 	"io"
+	"os"
 	"strings"
 )
 
@@ -29,4 +31,20 @@ func extractWinner(userInput string) string {
 func (cli *CLI) readLine() string {
 	cli.in.Scan()
 	return cli.in.Text()
+}
+
+func FileSystemPlayerStoreFromFile(path string) (*FileSystemStore, error) {
+	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+
+	if err != nil {
+		return nil, fmt.Errorf("problem opening %s %v", path, err)
+	}
+
+	store, err := NewFileSystemStore(db)
+
+	if err != nil {
+		return nil, fmt.Errorf("problem creating file system player store, %v ", err)
+	}
+
+	return store, nil
 }
