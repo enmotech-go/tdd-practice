@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"poker"
+	"github.com/enmotech-go/tdd-practice/poker"
 )
 
 const dbFileName = "game.db.json"

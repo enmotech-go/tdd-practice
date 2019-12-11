@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
-	"poker"
+	"github.com/enmotech-go/tdd-practice/poker"
 )
 
 const dbFileName = "game.db.json"
