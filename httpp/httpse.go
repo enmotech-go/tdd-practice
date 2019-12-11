@@ -162,6 +162,7 @@ func (f *FileSystemStore) RecordWin(name string) {
 	} else {
 		f.league = append(f.league, Player{name, 1})
 	}
+	f.database.Encode(f.league)
 }
 
 type tape struct {
