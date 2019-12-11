@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	"fmt"
@@ -92,7 +92,7 @@ func TestStoreWins(t *testing.T) {
 		}
 
 		if store.winCalls[0] != player {
-			t.Errorf("did not store correct winner got %q want %q", store.winCalls[0], player)
+			t.Errorf("did not store the correct winner got %q want %q", store.winCalls[0], player)
 		}
 	})
 }
