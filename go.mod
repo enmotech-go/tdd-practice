@@ -1,4 +1,4 @@
-module github.com/enmotech-go/tdd-practice
+module tdd-practice
 
 go 1.12
 
