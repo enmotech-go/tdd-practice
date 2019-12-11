@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-const jsonContentType = "application/json"
+const JSONContentType = "application/json"
 
 type PlayerStore interface {
 	GetPlayerScore(name string) int

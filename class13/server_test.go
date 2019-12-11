@@ -1,4 +1,4 @@
-package main
+package poker_test
 
 import (
 	"encoding/json"
@@ -8,12 +8,14 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	poker "enmotech-go/tdd-practice/class13"
 )
 
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   League
+	league   poker.League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -25,7 +27,7 @@ func (s *StubPlayerStore) RecordWin(name string) {
 	s.winCalls = append(s.winCalls, name)
 }
 
-func (s *StubPlayerStore) GetLeague() League {
+func (s *StubPlayerStore) GetLeague() poker.League {
 	return s.league
 }
 
@@ -34,7 +36,7 @@ func Test(t *testing.T) {
 		"Pepper": 20,
 		"Floyd":  10,
 	}}
-	server := NewPlayerServer(&store)
+	server := poker.NewPlayerServer(&store)
 
 	t.Run("returns Pepper's score", func(t *testing.T) {
 		request := newGetScoreRequest("Pepper")
@@ -68,7 +70,7 @@ func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		scores: map[string]int{},
 	}
-	server := NewPlayerServer(&store)
+	server := poker.NewPlayerServer(&store)
 
 	t.Run("if returns accepted on post", func(t *testing.T) {
 		player := "Pepper"
@@ -95,10 +97,10 @@ func TestLeague(t *testing.T) {
 		response := httptest.NewRecorder()
 
 		store := StubPlayerStore{}
-		server := NewPlayerServer(&store)
+		server := poker.NewPlayerServer(&store)
 		server.ServeHTTP(response, request)
 
-		var got []Player
+		var got []poker.Player
 
 		err := json.NewDecoder(response.Body).Decode(&got)
 		if err != nil {
@@ -108,14 +110,14 @@ func TestLeague(t *testing.T) {
 		assertResponseStatus(t, response.Code, http.StatusOK)
 	})
 	t.Run("it returns the league table as JSON", func(t *testing.T) {
-		wantedLeague := []Player{
+		wantedLeague := []poker.Player{
 			{"Cleo", 32},
 			{"Chris", 20},
 			{"Tiest", 32},
 		}
 
 		store := StubPlayerStore{nil, nil, wantedLeague}
-		server := NewPlayerServer(&store)
+		server := poker.NewPlayerServer(&store)
 
 		request := newLeagueRequest()
 		response := httptest.NewRecorder()
@@ -124,7 +126,7 @@ func TestLeague(t *testing.T) {
 
 		got := getLeagueFromResponse(t, response.Body)
 		assertResponseStatus(t, response.Code, http.StatusOK)
-		assertContentType(t, response, jsonContentType)
+		assertContentType(t, response, poker.JSONContentType)
 		assertLeague(t, got, wantedLeague)
 	})
 }
@@ -133,10 +135,10 @@ func TestUnit(t *testing.T) {
 	database, cleanDatabase := createTempFile(t, "")
 	defer cleanDatabase()
 
-	store, err := NewFileSystemPlayerStore(database)
+	store, err := poker.NewFileSystemPlayerStore(database)
 	assertNoError(t, err)
 
-	server := NewPlayerServer(store)
+	server := poker.NewPlayerServer(store)
 	player := "Pepper"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostScoreRequest(player))
@@ -156,7 +158,7 @@ func TestUnit(t *testing.T) {
 		assertResponseStatus(t, response.Code, http.StatusOK)
 
 		got := getLeagueFromResponse(t, response.Body)
-		want := []Player{{"Pepper", 3}}
+		want := []poker.Player{{"Pepper", 3}}
 		assertLeague(t, got, want)
 	})
 }
@@ -211,14 +213,14 @@ func assertContentType(t *testing.T, response *httptest.ResponseRecorder, want s
 	}
 }
 
-func assertLeague(t *testing.T, got, want []Player) {
+func assertLeague(t *testing.T, got, want []poker.Player) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v want %v", got, want)
 	}
 }
 
-func getLeagueFromResponse(t *testing.T, body io.Reader) (league []Player) {
+func getLeagueFromResponse(t *testing.T, body io.Reader) (league []poker.Player) {
 	t.Helper()
 	err := json.NewDecoder(body).Decode(&league)
 	if err != nil {
