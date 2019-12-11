@@ -1,4 +1,4 @@
-package main
+package poker
 
 import (
 	"encoding/json"
@@ -32,7 +32,7 @@ func (s *StubPlayerStore) GetPlayerScore(name string) (int, bool) {
 	return score, ok
 }
 func (s *StubPlayerStore) RecordWin(name string) {
-
+	s.winCalls = append(s.winCalls, name)
 }
 
 func (s *StubPlayerStore) GetLeague() League {
