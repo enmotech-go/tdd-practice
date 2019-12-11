@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	http2 "tdd-practice/http"
 )
 
 type InMemoryPlayerStore struct {
@@ -23,10 +24,10 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 	return i.store[name]
 }
 
-func (i *InMemoryPlayerStore) GetLeague() []Player {
-	var league []Player
+func (i *InMemoryPlayerStore) GetLeague() []http2.Player {
+	var league []http2.Player
 	for name, wins := range i.store {
-		league = append(league, Player{name, wins})
+		league = append(league, http2.Player{name, wins})
 	}
 	return league
 }
@@ -40,12 +41,12 @@ func main() {
 		log.Fatalf("problem opening %s %v", dbFileName, err)
 	}
 
-	store, err := NewFileSystemStore(db)
+	store, err := http2.NewFileSystemStore(db)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	server := NewPlayerServer(store)
+	server := http2.NewPlayerServer(store)
 	if err := http.ListenAndServe(":5000", http.HandlerFunc(server.ServeHTTP)); err != nil {
 		return
 	}
