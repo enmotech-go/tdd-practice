@@ -3,7 +3,7 @@ language: go
 go:
   - 1.11.x
   - 1.12.x
-go_import_path: $GOPATH/enmotech-go
+go_import_path: "${GOPATH}/src/enmotech-go"
 
 script:
   - go test -v ./... --cover -race -coverprofile=coverage.txt -covermode=atomic
