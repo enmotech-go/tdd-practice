@@ -19,7 +19,7 @@ func TestGETPlayers(t *testing.T) {
 			"Pepper": 20,
 			"Floyd":  10,
 		},
-		winCalls: nil,
+		WinCalls: nil,
 	}
 
 	server := NewPlayerServer(&store)
@@ -57,7 +57,7 @@ func TestGETPlayers(t *testing.T) {
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
 		scores:   map[string]int{},
-		winCalls: nil,
+		WinCalls: nil,
 	}
 	server := NewPlayerServer(&store)
 
@@ -71,11 +71,11 @@ func TestStoreWins(t *testing.T) {
 
 		assertStatus(t, response.Code, http.StatusAccepted)
 
-		if len(store.winCalls) != 1 {
+		if len(store.WinCalls) != 1 {
 			t.FailNow()
 		}
 
-		if store.winCalls[0] != player {
+		if store.WinCalls[0] != player {
 			t.FailNow()
 		}
 	})

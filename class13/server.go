@@ -19,12 +19,6 @@ type PlayerServer struct {
 	http.Handler
 }
 
-type StubPlayerStore struct {
-	scores   map[string]int
-	winCalls []string
-	league   League
-}
-
 type InMemoryPlayerStore struct {
 	store map[string]int
 }
@@ -45,18 +39,9 @@ func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
 	return i.store[name]
 }
 
-func (s *StubPlayerStore) RecordWin(name string) {
-	s.winCalls = append(s.winCalls, name)
-}
-
 func newPostWinRequest(name string) *http.Request {
 	req, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/players/%s", name), nil)
 	return req
-}
-
-func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	score := s.scores[name]
-	return score
 }
 
 func NewPlayerServer(store PlayerStore) *PlayerServer {
@@ -77,10 +62,6 @@ func (p *PlayerServer) getLeagueTable() League {
 	return League{
 		{"Chris", 20},
 	}
-}
-
-func (s *StubPlayerStore) GetLeague() League {
-	return s.league
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
